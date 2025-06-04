@@ -24,10 +24,25 @@ function isBasalamProduct(product: any): product is BasalamProduct {
   return 'title' in product
 }
 
+// Add utility functions for price conversion and formatting
+const rialToToman = (price: number): number => {
+  return Math.floor(price / 10)
+}
+
+const tomanToRial = (price: number): number => {
+  return price * 10
+}
+
+const formatPrice = (price: number): string => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
 function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamProducts }: ProductModalProps) {
   const [checkMessage, setCheckMessage] = useState<{ text: string; isSuccess: boolean } | null>(null)
   const [editMessage, setEditMessage] = useState<{ text: string; isSuccess: boolean } | null>(null)
   const [showSyncButton, setShowSyncButton] = useState(false)
+  const [showMixinButton, setShowMixinButton] = useState(false)
+  const [showBasalamButton, setShowBasalamButton] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedProduct, setEditedProduct] = useState<{
     name: string;
@@ -53,7 +68,7 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
       } else if (type === 'basalam' && isBasalamProduct(product)) {
         setEditedProduct({
           name: product.title,
-          price: product.price,
+          price: rialToToman(product.price), // Convert Rial to Toman for display
           description: product.description
         })
       }
@@ -90,27 +105,30 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
       )
       
       if (matchingBasalamProduct) {
-        // Check if prices match
-        if (matchingBasalamProduct.price !== product.price) {
+        // Check if prices match (convert Basalam price from Rial to Toman for comparison)
+        if (rialToToman(matchingBasalamProduct.price) !== product.price) {
           setCheckMessage({
-            text: "Your price is changed and is not the same with your same basalam product",
+            text: "قیمت محصول شما تغییر کرده، قیمت محصول دیگر را همگام سازی کنید",
             isSuccess: false
           })
           priceMismatch = true
         } else {
           setCheckMessage({
-            text: "Your product exists in both Mixin and Basalam products :)",
+            text: "محصول شما هم در باسلام و هم در میکسین وحود دارد",
             isSuccess: true
           })
         }
         changecard = 'mixin,basalam'
+        setShowBasalamButton(false)
       } else {
         setCheckMessage({
-          text: "Your product doesn't exist in Basalam products.",
+          text: "این محصول شما در باسلام ساخته نشده است، لطفاً  ابتدا آنرا در باسلام بسازید",
           isSuccess: false
         })
         changecard = 'mixin'
+        setShowBasalamButton(true)
       }
+      setShowMixinButton(false)
     } else if (type === 'basalam' && isBasalamProduct(product)) {
       currentProductName = product.title
       // Check if product exists in Mixin list
@@ -119,27 +137,30 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
       )
       
       if (matchingMixinProduct) {
-        // Check if prices match
-        if (matchingMixinProduct.price !== product.price) {
+        // Check if prices match (convert Basalam price from Rial to Toman for comparison)
+        if (matchingMixinProduct.price !== rialToToman(product.price)) {
           setCheckMessage({
-            text: "Your price is changed and is not the same with your same mixin product",
+            text: "قیمت محصول شما تغییر کرده، قیمت محصول دیگر را همگام سازی کنید",
             isSuccess: false
           })
           priceMismatch = true
         } else {
           setCheckMessage({
-            text: "Your product exists in both Mixin and Basalam products :)",
+            text: "محصول شما هم در باسلام و هم در میکسین وحود دارد",
             isSuccess: true
           })
         }
         changecard = 'mixin,basalam'
+        setShowMixinButton(false)
       } else {
         setCheckMessage({
-          text: "Your product doesn't exist in Mixin products.",
+          text: "این محصول شما در میکسین ساخته نشده است، لطفاً  ابتدا آنرا در میکسین بسازید",
           isSuccess: false
         })
         changecard = 'basalam'
+        setShowMixinButton(true)
       }
+      setShowBasalamButton(false)
     }
 
     setShowSyncButton(priceMismatch)
@@ -220,10 +241,10 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
 
       if (changecard.includes('basalam') && basalamCredentials) {
         console.log('Updating Basalam product...')
-        // Update Basalam product with FormData
+        // Convert Toman to Rial for Basalam update
         const basalamProductData = {
           name: editedProduct.name,
-          price: editedProduct.price
+          price: tomanToRial(editedProduct.price) // Convert Toman to Rial for Basalam API
         }
         try {
           console.log('Sending Basalam update request with data:', {
@@ -240,7 +261,7 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
       }
 
       setEditMessage({
-        text: 'Product updated successfully!',
+        text: 'محصول شما با موفقیت به‌روز شد',
         isSuccess: true
       })
 
@@ -272,10 +293,18 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
     }
   }
 
+  const handleMixinNavigation = () => {
+    window.open('https://mixin.ir/', '_blank')
+  }
+
+  const handleBasalamNavigation = () => {
+    window.open('https://basalam.com/', '_blank')
+  }
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
       {isEditing && <LoadingModal />}
-      <div className="bg-white p-8 rounded-lg w-[600px] max-h-[80vh] overflow-y-auto relative">
+      <div className="bg-white p-8 rounded-lg w-[600px] max-h-[80vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -303,6 +332,9 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
               className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
               dir="rtl"
             />
+            <p className="text-sm text-gray-500 mt-1">
+              {formatPrice(editedProduct.price)} تومان
+            </p>
           </div>
           <div>
             <label className="font-medium text-lg">Description:</label>
@@ -316,31 +348,13 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
           </div>
         </div>
         <div className="mt-8 flex flex-col items-end gap-4">
-          <div className="flex gap-4 w-full justify-between">
-            <button
-              onClick={() => {/* TODO: Add delete handler */}}
-              className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md"
-            >
-              <span>Delete</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
+          <div className="flex gap-4 w-full justify-end">
             <div className="flex gap-4">
               <button
                 onClick={handleEdit}
                 className="flex items-center gap-2 px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors shadow-md"
               >
-                <span>Edit</span>
+                <span>ویرایش</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -354,7 +368,7 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
                 onClick={handleCheck}
                 className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md"
               >
-                <span>Check</span>
+                <span>بررسی</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -380,7 +394,7 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
                   onClick={handleEdit}
                   className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
                 >
-                  <span>Sync</span>
+                  <span>همگام سازی</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
@@ -390,6 +404,46 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
                     <path
                       fillRule="evenodd"
                       d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              )}
+              {showMixinButton && (
+                <button
+                  onClick={handleMixinNavigation}
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                >
+                  <span>برو به میکسین</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              )}
+              {showBasalamButton && (
+                <button
+                  onClick={handleBasalamNavigation}
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                >
+                  <span>برو به باسلام</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -561,6 +615,9 @@ function CreateMixinProductModal({ isOpen, onClose }: CreateMixinProductModalPro
               className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
               dir="rtl"
             />
+            <p className="text-sm text-gray-500 mt-1">
+              {formatPrice(newProduct.price)} تومان
+            </p>
           </div>
           <div>
             <label className="font-medium text-lg">Stock:</label>
@@ -848,7 +905,7 @@ function HomePage() {
                         dir="rtl"
                       >
                         <h3 className="font-medium">{product.name}</h3>
-                        <p className="text-gray-600">قیمت: {product.price}</p>
+                        <p className="text-gray-600">قیمت: {formatPrice(product.price)} تومان</p>
                       </div>
                     ))
                   )}
@@ -889,7 +946,7 @@ function HomePage() {
                         dir="rtl"
                       >
                         <h3 className="font-medium">{product.title}</h3>
-                        <p className="text-gray-600">قیمت: {product.price}</p>
+                        <p className="text-gray-600">قیمت: {formatPrice(rialToToman(product.price))} تومان</p>
                       </div>
                     ))
                   )}
@@ -935,7 +992,7 @@ function HomePage() {
                         dir="rtl"
                       >
                         <h3 className="font-medium">{product.name}</h3>
-                        <p className="text-gray-600">قیمت: {product.price}</p>
+                        <p className="text-gray-600">قیمت: {formatPrice(product.price)} تومان</p>
                       </div>
                     ))
                   )}
@@ -981,7 +1038,7 @@ function HomePage() {
                         dir="rtl"
                       >
                         <h3 className="font-medium">{product.title}</h3>
-                        <p className="text-gray-600">قیمت: {product.price}</p>
+                        <p className="text-gray-600">قیمت: {formatPrice(rialToToman(product.price))} تومان</p>
                       </div>
                     ))
                   )}
