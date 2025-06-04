@@ -9,10 +9,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/mixin': {
+      '/api/mixin': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api\/mixin/, '/mixin'),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
@@ -25,10 +26,11 @@ export default defineConfig({
           });
         },
       },
-      '/products': {
+      '/api/products': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api\/products/, '/products'),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
@@ -41,25 +43,11 @@ export default defineConfig({
           });
         },
       },
-      '/api': {
+      '/api/basalam': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
-        },
-      },
-      '/basalam': {
-        target: 'https://mixinsalam.liara.run',
-        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/basalam/, '/basalam'),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
