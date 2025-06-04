@@ -11,6 +11,24 @@ export const api = axios.create({
   withCredentials: true
 })
 
+// Add request interceptor for debugging
+api.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.data,
+      params: config.params
+    });
+    return config;
+  },
+  (error) => {
+    console.error('API Request Error:', error);
+    return Promise.reject(error);
+  }
+);
+
 // Add response interceptor for debugging
 api.interceptors.response.use(
   (response) => {

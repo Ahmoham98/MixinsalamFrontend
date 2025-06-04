@@ -5,23 +5,38 @@ import { AxiosError } from 'axios'
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`)
+      console.log('Validating Mixin credentials:', { url, token });
+      
+      const response = await api.post('/mixin/client', {
+        mixin_url: url,
+        token: token
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+
+      console.log('Validation response:', response.data);
 
       if (response.data) {
-        return response.data
+        return response.data;
       }
-      throw new Error('Invalid response from server')
+      throw new Error('Invalid response from server');
     } catch (error: any) {
-      console.error('Full error object:', error)
-      console.error('Error response:', error.response)
+      console.error('Full error object:', error);
+      console.error('Error response:', error.response);
+      
       if (error.response?.status === 403) {
-        throw new Error("we can't login with the following credentials")
+        throw new Error("we can't login with the following credentials");
       } else if (error.response?.status === 404) {
-        throw new Error("Invalid data. could be your url or your access token")
+        throw new Error("Invalid data. could be your url or your access token");
+      } else if (error.response?.status === 405) {
+        throw new Error("Method not allowed. Please check your API endpoint configuration.");
       } else if (error.response?.status === 500) {
-        throw new Error("some error occurred... could be from server or from our request.")
+        throw new Error("some error occurred... could be from server or from our request.");
       }
-      throw error
+      throw error;
     }
   },
 
