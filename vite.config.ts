@@ -9,11 +9,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api/mixin': {
+      '/products': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api\/mixin/, '/mixin'),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
@@ -26,11 +25,10 @@ export default defineConfig({
           });
         },
       },
-      '/api/products': {
+      '/api': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api\/products/, '/products'),
+        rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
@@ -43,11 +41,9 @@ export default defineConfig({
           });
         },
       },
-      '/api/basalam': {
+      '/basalam': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api\/basalam/, '/basalam'),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);

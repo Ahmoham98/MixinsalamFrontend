@@ -325,16 +325,18 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
           </div>
           <div>
             <label className="font-medium text-lg">Price:</label>
-            <input
-              type="number"
-              value={editedProduct.price}
-              onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
-              className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
-              dir="rtl"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              {formatPrice(editedProduct.price)} تومان
-            </p>
+            <div className="relative">
+              <input
+                type="number"
+                value={editedProduct.price}
+                onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
+                dir="rtl"
+              />
+              <p className="text-sm text-gray-500 mt-1 text-right">
+                {formatPrice(editedProduct.price)} تومان
+              </p>
+            </div>
           </div>
           <div>
             <label className="font-medium text-lg">Description:</label>
@@ -608,16 +610,18 @@ function CreateMixinProductModal({ isOpen, onClose }: CreateMixinProductModalPro
           </div>
           <div>
             <label className="font-medium text-lg">Price:</label>
-            <input
-              type="number"
-              value={newProduct.price}
-              onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
-              className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
-              dir="rtl"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              {formatPrice(newProduct.price)} تومان
-            </p>
+            <div className="relative">
+              <input
+                type="number"
+                value={newProduct.price}
+                onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
+                dir="rtl"
+              />
+              <p className="text-sm text-gray-500 mt-1 text-right">
+                {formatPrice(newProduct.price)} تومان
+              </p>
+            </div>
           </div>
           <div>
             <label className="font-medium text-lg">Stock:</label>
@@ -877,13 +881,13 @@ function HomePage() {
               <div 
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
-                <h2 className="text-xl font-semibold">Common Mixin Products</h2>
                 <button 
                   className="text-gray-500 hover:text-gray-700 focus:outline-none"
                   onClick={() => setIsCommonMixinSectionOpen(!isCommonMixinSectionOpen)}
                 >
                   {isCommonMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                 </button>
+                <h2 className="text-xl font-semibold text-right w-full">محصول مشترک در میکسین</h2>
               </div>
               {isCommonMixinSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
@@ -918,13 +922,13 @@ function HomePage() {
               <div 
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
-                <h2 className="text-xl font-semibold">Common Basalam Products</h2>
                 <button 
                   className="text-gray-500 hover:text-gray-700 focus:outline-none"
                   onClick={() => setIsCommonBasalamSectionOpen(!isCommonBasalamSectionOpen)}
                 >
                   {isCommonBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                 </button>
+                <h2 className="text-xl font-semibold text-right w-full">محصول مشترک در باسلام</h2>
               </div>
               {isCommonBasalamSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
@@ -964,13 +968,13 @@ function HomePage() {
               <div 
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
-                <h2 className="text-xl font-semibold">Mixin Products</h2>
                 <button 
                   className="text-gray-500 hover:text-gray-700 focus:outline-none"
                   onClick={() => setIsMixinSectionOpen(!isMixinSectionOpen)}
                 >
                   {isMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                 </button>
+                <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در میکسین</h2>
               </div>
               {isMixinSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
@@ -1005,13 +1009,13 @@ function HomePage() {
               <div 
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
-                <h2 className="text-xl font-semibold">Basalam Products</h2>
                 <button 
                   className="text-gray-500 hover:text-gray-700 focus:outline-none"
                   onClick={() => setIsBasalamSectionOpen(!isBasalamSectionOpen)}
                 >
                   {isBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                 </button>
+                <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در باسلام</h2>
               </div>
               {isBasalamSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
