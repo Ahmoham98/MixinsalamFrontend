@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Use the full URL in production, relative path in development
 export const BASE_URL = import.meta.env.PROD 
-  ? 'https://mixinsalam.liara.run'
+  ? 'https://mixinsalam.liara.run'  // Note: single 'm' in mixinsalam
   : '/api'
 
 export const api = axios.create({
@@ -13,6 +13,24 @@ export const api = axios.create({
   },
   withCredentials: true
 })
+
+// Add request interceptor for debugging
+api.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      params: config.params,
+      data: config.data
+    });
+    return config;
+  },
+  (error) => {
+    console.error('API Request Error:', error);
+    return Promise.reject(error);
+  }
+);
 
 // Add response interceptor for debugging
 api.interceptors.response.use(

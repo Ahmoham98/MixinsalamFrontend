@@ -1,4 +1,4 @@
-import { api, handleApiError } from './config'
+import { api, handleApiError, BASE_URL } from './config'
 import type { MixinCredentials, MixinProduct } from '../../types'
 import { AxiosError } from 'axios'
 
@@ -10,10 +10,23 @@ export const mixinApi = {
       // Ensure URL is properly formatted
       const formattedUrl = url.replace(/^(https?:\/\/)/, '');
       
-      const response = await api.post('/mixin/client/', null, {
-        params: {
-          mixin_url: formattedUrl,
-          token: token
+      // Log the full request URL and parameters
+      const requestUrl = '/mixin/client/';
+      const params = {
+        mixin_url: formattedUrl,
+        token: token
+      };
+      console.log('Making request to:', {
+        url: requestUrl,
+        params: params,
+        fullUrl: `${BASE_URL}${requestUrl}`
+      });
+
+      const response = await api.post(requestUrl, null, {
+        params: params,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
 
