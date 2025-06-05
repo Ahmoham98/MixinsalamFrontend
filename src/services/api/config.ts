@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const isDevelopment = import.meta.env.DEV
-export const BASE_URL = isDevelopment ? '/api' : '/api'  // Use proxy in both dev and prod
+export const BASE_URL = isDevelopment ? '/api' : 'https://mixinsalam.liara.run'
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -9,7 +9,12 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true,
+  // Add these options to handle redirects and methods
+  maxRedirects: 5,
+  validateStatus: function (status) {
+    return status >= 200 && status < 500; // Accept all status codes less than 500
+  }
 })
 
 // Add request interceptor for debugging
@@ -22,6 +27,11 @@ api.interceptors.request.use(
     console.log('Request Headers:', config.headers);
     console.log('Request Data:', config.data);
     console.log('Base URL:', config.baseURL);
+    
+    // Ensure the request method is set correctly
+    if (config.method === 'post') {
+      config.method = 'POST';
+    }
     
     return config;
   },

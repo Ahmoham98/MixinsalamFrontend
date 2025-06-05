@@ -11,11 +11,12 @@ export const mixinApi = {
       const requestUrl = `/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
       console.log('Request URL:', requestUrl);
       
-      const response = await api.post(requestUrl, null, {
+      const response = await api.post(requestUrl, {}, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
-        }
+        },
+        method: 'POST'  // Explicitly set the method
       });
 
       console.log('=== Mixin Validation Response ===');
@@ -40,7 +41,9 @@ export const mixinApi = {
         console.error('Response Headers:', error.response.headers);
         console.error('Response Data:', error.response.data);
         
-        if (error.response.status === 403) {
+        if (error.response.status === 405) {
+          throw new Error("Method not allowed. Please check your request method.");
+        } else if (error.response.status === 403) {
           throw new Error("we can't login with the following credentials");
         } else if (error.response.status === 404) {
           throw new Error("Invalid data. could be your url or your access token");
