@@ -5,26 +5,59 @@ import { AxiosError } from 'axios'
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      const response = await api.post('/mixin/client', {
+      console.log('Attempting to validate Mixin credentials:', { url, token });
+      
+      const response = await api.post('/mixin/client/', {
         mixin_url: url,
         token: token
-      })
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        // Add these options to handle redirects
+        maxRedirects: 5,
+        validateStatus: function (status) {
+          return status >= 200 && status < 500;
+        }
+      });
+
+      console.log('Mixin validation response:', response);
 
       if (response.data) {
-        return response.data
+        return response.data;
       }
-      throw new Error('Invalid response from server')
+      throw new Error('Invalid response from server');
     } catch (error: any) {
-      console.error('Full error object:', error)
-      console.error('Error response:', error.response)
-      if (error.response?.status === 403) {
-        throw new Error("we can't login with the following credentials")
-      } else if (error.response?.status === 404) {
-        throw new Error("Invalid data. could be your url or your access token")
-      } else if (error.response?.status === 500) {
-        throw new Error("some error occurred... could be from server or from our request.")
+      console.error('Full error object:', error);
+      console.error('Error response:', error.response);
+      
+      if (error.response) {
+        if (error.response.status === 307) {
+          // Handle redirect
+          const redirectUrl = error.response.headers.location;
+          console.log('Redirecting to:', redirectUrl);
+          const redirectResponse = await api.post(redirectUrl, {
+            mixin_url: url,
+            token: token
+          });
+          return redirectResponse.data;
+        }
+        
+        if (error.response.status === 403) {
+          throw new Error("we can't login with the following credentials");
+        } else if (error.response.status === 404) {
+          throw new Error("Invalid data. could be your url or your access token");
+        } else if (error.response.status === 500) {
+          throw new Error("some error occurred... could be from server or from our request.");
+        }
       }
-      throw error
+      
+      if (error.message === 'Network Error') {
+        throw new Error('Unable to connect to the server. Please check your internet connection.');
+      }
+      
+      throw error;
     }
   },
 

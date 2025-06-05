@@ -9,8 +9,27 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true,
+  // Add these options to handle redirects
+  maxRedirects: 5,
+  validateStatus: function (status) {
+    return status >= 200 && status < 500; // Accept all status codes less than 500
+  }
 })
+
+// Add request interceptor to handle trailing slashes
+api.interceptors.request.use(
+  (config) => {
+    // Ensure URLs don't have double slashes
+    if (config.url) {
+      config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Add response interceptor for debugging
 api.interceptors.response.use(
