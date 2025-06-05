@@ -5,7 +5,9 @@ import { AxiosError } from 'axios'
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
+      console.log('=== Mixin Validation Debug ===');
       console.log('Attempting to validate Mixin credentials:', { url, token });
+      console.log('Request URL:', `/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
       
       const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`, null, {
         headers: {
@@ -19,17 +21,28 @@ export const mixinApi = {
         }
       });
 
-      console.log('Mixin validation response:', response);
+      console.log('=== Mixin Validation Response ===');
+      console.log('Response Status:', response.status);
+      console.log('Response Headers:', response.headers);
+      console.log('Response Data:', response.data);
 
       if (response.data) {
         return response.data;
       }
       throw new Error('Invalid response from server');
     } catch (error: any) {
-      console.error('Full error object:', error);
-      console.error('Error response:', error.response);
+      console.error('=== Mixin Validation Error ===');
+      console.error('Error Type:', error.constructor.name);
+      console.error('Error Message:', error.message);
+      console.error('Error Code:', error.code);
+      console.error('Error Config:', error.config);
+      console.error('Error Response:', error.response);
       
       if (error.response) {
+        console.error('Response Status:', error.response.status);
+        console.error('Response Headers:', error.response.headers);
+        console.error('Response Data:', error.response.data);
+        
         if (error.response.status === 307) {
           // Handle redirect
           const redirectUrl = error.response.headers.location;
@@ -53,6 +66,12 @@ export const mixinApi = {
       }
       
       if (error.message === 'Network Error') {
+        console.error('Network Error Details:', {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+          baseURL: error.config?.baseURL
+        });
         throw new Error('Unable to connect to the server. Please check your internet connection.');
       }
       

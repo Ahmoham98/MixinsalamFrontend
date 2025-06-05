@@ -17,16 +17,26 @@ export const api = axios.create({
   }
 })
 
-// Add request interceptor to handle trailing slashes
+// Add request interceptor to handle trailing slashes and add debug logging
 api.interceptors.request.use(
   (config) => {
     // Ensure URLs don't have double slashes
     if (config.url) {
       config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
     }
+    
+    // Add debug logging
+    console.log('=== API Request Debug ===');
+    console.log('Request URL:', config.url);
+    console.log('Request Method:', config.method);
+    console.log('Request Headers:', config.headers);
+    console.log('Request Data:', config.data);
+    console.log('Base URL:', config.baseURL);
+    
     return config;
   },
   (error) => {
+    console.error('Request Interceptor Error:', error);
     return Promise.reject(error);
   }
 );
@@ -34,22 +44,22 @@ api.interceptors.request.use(
 // Add response interceptor for debugging
 api.interceptors.response.use(
   (response) => {
-    console.log('API Response:', {
-      url: response.config.url,
-      method: response.config.method,
-      status: response.status,
-      data: response.data
-    });
+    console.log('=== API Response Debug ===');
+    console.log('Response URL:', response.config.url);
+    console.log('Response Method:', response.config.method);
+    console.log('Response Status:', response.status);
+    console.log('Response Headers:', response.headers);
+    console.log('Response Data:', response.data);
     return response;
   },
   (error) => {
-    console.error('API Error:', {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message
-    });
+    console.error('=== API Error Debug ===');
+    console.error('Error URL:', error.config?.url);
+    console.error('Error Method:', error.config?.method);
+    console.error('Error Status:', error.response?.status);
+    console.error('Error Headers:', error.response?.headers);
+    console.error('Error Data:', error.response?.data);
+    console.error('Error Message:', error.message);
     return Promise.reject(error);
   }
 );
