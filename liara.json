@@ -1,9 +1,6 @@
 {
   "name": "mixinsalamm",
   "type": "static",
-  "build": {
-    "output": "dist"
-  },
   "routes": [
     {
       "src": "/assets/(.*)",
