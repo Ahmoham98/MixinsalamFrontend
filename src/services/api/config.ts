@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Use the full URL in production, relative path in development
 export const BASE_URL = import.meta.env.PROD 
-  ? 'https://mixinsalam.liara.run'  // Note: single 'm' in mixinsalam
+  ? 'https://mixinsalamm.liara.run'  // Updated to match frontend URL
   : '/api'
 
 // Create axios instance with default config
@@ -12,8 +12,8 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: false, // Changed to false to avoid CORS issues
-  timeout: 30000, // Increased timeout to 30 seconds
+  withCredentials: true, // Changed to true to match backend configuration
+  timeout: 30000,
   maxRedirects: 5,
   maxContentLength: 50 * 1024 * 1024, // 50MB max content length
   validateStatus: (status) => status >= 200 && status < 500
@@ -37,10 +37,6 @@ api.interceptors.request.use(
     if (config.headers) {
       config.headers['Content-Type'] = 'application/json';
       config.headers['Accept'] = 'application/json';
-      // Add CORS headers
-      config.headers['Access-Control-Allow-Origin'] = '*';
-      config.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
-      config.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
     }
 
     return config;

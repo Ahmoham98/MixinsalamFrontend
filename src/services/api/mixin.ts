@@ -30,8 +30,7 @@ export const mixinApi = {
         },
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          'Accept': 'application/json'
         },
         timeout: 30000,
         validateStatus: (status: number) => status >= 200 && status < 500
