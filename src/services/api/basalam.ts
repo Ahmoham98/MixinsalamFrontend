@@ -139,20 +139,20 @@ export const basalamApi = {
 
   updateProduct: async (credentials: BasalamCredentials, productId: number, productData: { name: string; price: number }) => {
     try {
-      const formData = new FormData()
-      formData.append('name', productData.name)
-      formData.append('price', productData.price.toString())
+    const formData = new FormData()
+    formData.append('name', productData.name)
+    formData.append('price', productData.price.toString())
 
       const response = await api.patch(
         `/products/update/basalam/${productId}`,
         formData,
-        {
-          headers: {
+      {
+        headers: {
             'Authorization': `Bearer ${credentials.access_token}`,
             'Content-Type': 'multipart/form-data'
           }
-        }
-      )
+      }
+    )
 
       if (!response.data) {
         throw new Error('No data received in response')
