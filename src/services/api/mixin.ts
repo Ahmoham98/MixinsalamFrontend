@@ -14,6 +14,9 @@ export const mixinApi = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         },
         // Add these options to handle redirects
         maxRedirects: 5,
@@ -40,6 +43,14 @@ export const mixinApi = {
           const redirectResponse = await api.post(redirectUrl, {
             mixin_url: url,
             token: token
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            }
           });
           return redirectResponse.data;
         }

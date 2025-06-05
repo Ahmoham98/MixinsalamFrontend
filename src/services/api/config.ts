@@ -9,7 +9,7 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: false, // Changed to false for CORS
   // Add these options to handle redirects
   maxRedirects: 5,
   validateStatus: function (status) {
@@ -17,13 +17,19 @@ export const api = axios.create({
   }
 })
 
-// Add request interceptor to handle trailing slashes
+// Add request interceptor to handle trailing slashes and CORS
 api.interceptors.request.use(
   (config) => {
     // Ensure URLs don't have double slashes
     if (config.url) {
       config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
     }
+    
+    // Add CORS headers
+    config.headers['Access-Control-Allow-Origin'] = '*';
+    config.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
+    config.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
+    
     return config;
   },
   (error) => {
