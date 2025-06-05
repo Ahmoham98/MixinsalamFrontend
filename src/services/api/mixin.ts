@@ -32,7 +32,8 @@ export const mixinApi = {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        timeout: 30000,
+        // Add timeout and validate status
+        timeout: 10000,
         validateStatus: (status: number) => status >= 200 && status < 500
       };
 
@@ -47,34 +48,9 @@ export const mixinApi = {
       console.log('Raw response:', response);
       console.log('Response data:', response.data);
 
-      // Handle successful response
       if (response.data) {
-        // If we have credentials in the response, use them
-        if (response.data['mixin-ceredentials']) {
-          return response.data;
-        }
-        // If we have a success message but no credentials, create a credentials object
-        else if (response.data.message) {
-          return {
-            'mixin-ceredentials': {
-              mixin_url: formattedUrl,
-              access_token: token
-            },
-            message: response.data.message
-          };
-        }
-        // If we have a simple success response
-        else {
-          return {
-            'mixin-ceredentials': {
-              mixin_url: formattedUrl,
-              access_token: token
-            },
-            message: 'Successfully connected to Mixin'
-          };
-        }
+        return response.data;
       }
-
       throw new Error('Invalid response from server');
     } catch (error: any) {
       console.error('Error details:', {

@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Use the full URL in production, relative path in development
 export const BASE_URL = import.meta.env.PROD 
-  ? 'https://mixinsalamm.liara.run'  // Updated to match frontend URL
+  ? 'https://mixinsalam.liara.run'  // Note: single 'm' in mixinsalam
   : '/api'
 
 // Create axios instance with default config
@@ -12,8 +12,8 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true, // Changed to true to match backend configuration
-  timeout: 30000,
+  withCredentials: true,
+  timeout: 10000, // 10 second timeout
   maxRedirects: 5,
   maxContentLength: 50 * 1024 * 1024, // 50MB max content length
   validateStatus: (status) => status >= 200 && status < 500
