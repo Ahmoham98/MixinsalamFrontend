@@ -1,94 +1,311 @@
 import { api, handleApiError, BASE_URL } from './config'
+import type { MixinCredentials, MixinProduct } from '../../types'
 import { AxiosError } from 'axios'
 
-interface MixinCredentials {
-  url: string
-  token: string
-}
-
-interface MixinProduct {
-  id: string
-  name: string
-  price: number
-  description: string
-  images: string[]
-}
-
 export const mixinApi = {
-  async validateCredentials(credentials: MixinCredentials) {
+  validateCredentials: async (url: string, token: string) => {
     try {
-      console.log('Validating Mixin credentials:', credentials);
+      console.log('Starting Mixin credentials validation...');
       
-      // Format the URL by removing protocol if present
-      const formattedUrl = credentials.url.replace(/^https?:\/\//, '');
+      // Ensure URL is properly formatted
+      const formattedUrl = url.replace(/^(https?:\/\/)/, '');
       console.log('Formatted URL:', formattedUrl);
       
-      const requestUrl = `${BASE_URL}/mixin/validate`;
-      console.log('Making request to:', requestUrl);
-      
-      const response = await api.post(requestUrl, {
-        mixin_url: formattedUrl,
-        token: credentials.token
+      // Prepare request configuration
+      const requestConfig = {
+        url: '/mixin/client/',
+        method: 'POST',
+        params: {
+          mixin_url: formattedUrl,
+          token: token
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        // Add timeout and validate status
+        timeout: 10000,
+        validateStatus: (status: number) => status >= 200 && status < 500
+      };
+
+      console.log('Request configuration:', {
+        ...requestConfig,
+        fullUrl: `${BASE_URL}${requestConfig.url}`
       });
-      
-      console.log('Mixin validation response:', response.data);
-      
-      if (!response.data) {
-        throw new Error('Invalid response from server');
+
+      // Make the request
+      const response = await api(requestConfig);
+
+      console.log('Raw response:', response);
+      console.log('Response data:', response.data);
+
+      if (response.data) {
+        return response.data;
       }
-      
-      return response.data;
-    } catch (error: unknown) {
-      console.error('Mixin validation error:', error);
-      if (error instanceof AxiosError && error.response) {
-        switch (error.response.status) {
-          case 403:
-            throw new Error('Invalid credentials');
-          case 404:
-            throw new Error('Mixin website not found');
-          case 500:
-            throw new Error('Server error occurred');
-          default:
-            throw new Error(error.response.data?.message || 'Failed to validate credentials');
+      throw new Error('Invalid response from server');
+    } catch (error: any) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+
+      if (error.response) {
+        console.error('Response error:', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data,
+          headers: error.response.headers
+        });
+      }
+
+      if (error.request) {
+        console.error('Request error:', {
+          method: error.request.method,
+          url: error.request.url,
+          headers: error.request.headers
+        });
+      }
+
+      if (error.response?.status === 403) {
+        throw new Error("we can't login with the following credentials");
+      } else if (error.response?.status === 404) {
+        throw new Error("Invalid data. could be your url or your access token");
+      } else if (error.response?.status === 500) {
+        throw new Error("some error occurred... could be from server or from our request.");
+      }
+
+      // Handle network errors
+      if (error.code === 'ERR_NETWORK') {
+        console.error('Network error details:', {
+          message: error.message,
+          config: error.config
+        });
+        throw new Error('Network error: Unable to connect to the server. Please check your internet connection and try again.');
+      }
+
+      throw error;
+    }
+  },
+
+  getProducts: async (credentials: MixinCredentials): Promise<MixinProduct[]> => {
+    try {
+      console.log('Fetching Mixin products with credentials:', {
+        url: credentials.url,
+        token: credentials.access_token
+      });
+
+      const response = await api.get('/products/my-mixin-products', {
+        headers: {
+          Authorization: `Bearer ${credentials.access_token}`,
+        },
+        params: {
+          mixin_url: credentials.url,
+          mixin_page: 1,
+        },
+      });
+
+      console.log('Mixin products response:', response.data);
+
+      // Handle paginated response
+      if (response.data?.result && Array.isArray(response.data.result)) {
+        return response.data.result;
+      }
+
+      // Fallback to direct array
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+
+      // Fallback to single item
+      if (response.data?.id) {
+        return [response.data];
+      }
+
+      console.error('Unexpected response format:', response.data);
+      return [];
+    } catch (error) {
+      console.error('Error fetching Mixin products:', error);
+      return [];
+    }
+  },
+
+  getProductById: async (credentials: MixinCredentials, productId: number): Promise<MixinProduct | null> => {
+    try {
+      const response = await api.get(`/products/mixin/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${credentials.access_token}`,
+        },
+        params: {
+          mixin_url: credentials.url,
+        },
+      })
+      return response.data || null
+    } catch (error) {
+      console.error('Error fetching Mixin product:', error)
+      return null
+    }
+  },
+
+  updateProduct: async (credentials: MixinCredentials, productId: number, productData: any) => {
+    if (!credentials.url) {
+      throw new Error('Mixin URL not found in credentials')
+    }
+
+    try {
+      // Get the original product data first
+      const originalProduct = await mixinApi.getProductById(credentials, productId)
+      if (!originalProduct) {
+        throw new Error('Could not fetch original product data')
+      }
+
+      // Create updated data by merging original data with new values
+      const updatedData = {
+        ...originalProduct,
+        name: productData.name,
+        price: Number(productData.price),
+        description: productData.description,
+        extra_fields: []  // Always set extra_fields to empty array
+      }
+
+      console.log('Sending update request with data:', updatedData)
+
+      const response = await api.put(
+        `/products/update/mixin/${productId}`,
+        updatedData,
+        {
+          headers: {
+            'Authorization': `Bearer ${credentials.access_token}`
+          },
+          params: {
+            mixin_url: credentials.url
+          }
         }
+      )
+
+      return response.data
+    } catch (error: any) {
+      console.error('Error updating Mixin product:', error)
+      if (error.response?.data) {
+        // Handle validation errors
+        if (error.response.status === 422) {
+          const validationErrors = error.response.data.detail
+          if (Array.isArray(validationErrors)) {
+            const errorMessages = validationErrors.map(err => `${err.loc[1]}: ${err.msg}`).join(', ')
+            throw new Error(`Validation error: ${errorMessages}`)
+          }
+        }
+        throw new Error(error.response.data.detail || 'Failed to update Mixin product')
       }
-      throw handleApiError(error);
+      throw new Error('Failed to update Mixin product')
     }
   },
 
-  async getProducts() {
-    try {
-      const response = await api.get('/mixin/products')
-      return response.data
-    } catch (error) {
-      throw handleApiError(error)
+  createProduct: async (credentials: MixinCredentials, productData: {
+    name: string;
+    main_category: number;
+    description?: string;
+    analysis?: string;
+    english_name?: string;
+    other_categories?: number[];
+    brand?: number;
+    is_digital?: boolean;
+    price?: number;
+    compare_at_price?: number;
+    special_offer?: boolean;
+    special_offer_end?: string;
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
+    barcode?: string;
+    stock_type?: string;
+    stock?: number;
+    max_order_quantity?: number;
+    guarantee?: string;
+    product_identifier?: string;
+    old_path?: string;
+    old_slug?: string;
+    has_variants?: boolean;
+    available?: boolean;
+    seo_title?: string;
+    seo_description?: string;
+    extra_fields?: string[];
+  }) => {
+    if (!credentials.url) {
+      throw new Error('Mixin URL not found in credentials')
     }
-  },
 
-  async getProductById(id: string) {
     try {
-      const response = await api.get(`/mixin/products/${id}`)
+      // Create request body exactly matching the successful Postman request
+      const requestBody = {
+        name: productData.name,
+        main_category: productData.main_category,
+        description: productData.description || '',
+        english_name: null,
+        other_categories: [],
+        brand: null,
+        analysis: null,
+        price: productData.price || 0,
+        special_offer_end: null,
+        length: null,
+        width: null,
+        height: null,
+        weight: productData.weight || 750,
+        barcode: '',
+        compare_at_price: null,
+        guarantee: null,
+        product_identifier: null,
+        max_order_quantity: null,
+        stock: productData.stock || 6,
+        old_slug: null,
+        old_path: null,
+        seo_title: null,
+        seo_description: null,
+        extra_fields: []
+      }
+
+      console.log('Creating Mixin product with data:', requestBody)
+      const response = await api.post(
+        '/products/create/mixin',
+        requestBody,
+        {
+          headers: {
+            'Authorization': `Bearer ${credentials.access_token}`,
+            'Content-Type': 'application/json'
+          },
+          params: {
+            mixin_url: credentials.url
+          }
+        }
+      )
+
+      if (!response.data) {
+        throw new Error('No data received in response')
+      }
+
       return response.data
     } catch (error) {
-      throw handleApiError(error)
-    }
-  },
-
-  async updateProduct(id: string, product: Partial<MixinProduct>) {
-    try {
-      const response = await api.put(`/mixin/products/${id}`, product)
-      return response.data
-    } catch (error) {
-      throw handleApiError(error)
-    }
-  },
-
-  async createProduct(product: Omit<MixinProduct, 'id'>) {
-    try {
-      const response = await api.post('/mixin/products', product)
-      return response.data
-    } catch (error) {
-      throw handleApiError(error)
+      console.error('Error creating Mixin product:', error)
+      if (error instanceof AxiosError && error.response) {
+        console.error('Error response:', error.response.data)
+        console.error('Error status:', error.response.status)
+        
+        // Handle validation errors
+        if (error.response.status === 422) {
+          const validationErrors = error.response.data.detail
+          if (Array.isArray(validationErrors)) {
+            const errorMessages = validationErrors.map(err => `${err.loc[1]}: ${err.msg}`).join(', ')
+            throw new Error(`Validation error: ${errorMessages}`)
+          }
+        }
+        
+        // Handle other error types
+        const errorMessage = error.response.data?.detail || error.response.data?.message || 'Failed to create Mixin product'
+        throw new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage))
+      }
+      throw new Error('Failed to create Mixin product')
     }
   }
 }

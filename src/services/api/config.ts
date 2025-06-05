@@ -1,10 +1,11 @@
-import axios, { AxiosHeaders } from 'axios'
+import axios from 'axios'
 
 // Use the full URL in production, relative path in development
 export const BASE_URL = import.meta.env.PROD 
   ? 'https://mixinsalam.liara.run'  // Note: single 'm' in mixinsalam
   : '/api'
 
+// Create axios instance with default config
 export const api = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -12,31 +13,40 @@ export const api = axios.create({
     'Accept': 'application/json',
   },
   withCredentials: true,
-  // Add timeout
-  timeout: 10000
+  timeout: 10000, // 10 second timeout
+  maxRedirects: 5,
+  maxContentLength: 50 * 1024 * 1024, // 50MB max content length
+  validateStatus: (status) => status >= 200 && status < 500
 })
 
 // Add request interceptor for debugging
 api.interceptors.request.use(
   (config) => {
-    // Ensure headers are properly set
-    const headers = new AxiosHeaders(config.headers);
-    headers.set('Content-Type', 'application/json');
-    headers.set('Accept', 'application/json');
-    config.headers = headers;
-    
-    console.log('API Request:', {
-      url: config.url,
-      method: config.method,
-      headers: config.headers,
+    // Log the full request details
+    console.log('Making API Request:', {
+      method: config.method?.toUpperCase(),
+      url: `${config.baseURL}${config.url}`,
       params: config.params,
+      headers: config.headers,
       data: config.data,
-      fullUrl: `${BASE_URL}${config.url}`
+      timeout: config.timeout,
+      withCredentials: config.withCredentials
     });
+
+    // Ensure headers are set correctly
+    if (config.headers) {
+      config.headers['Content-Type'] = 'application/json';
+      config.headers['Accept'] = 'application/json';
+    }
+
     return config;
   },
   (error) => {
-    console.error('API Request Error:', error);
+    console.error('API Request Error:', {
+      message: error.message,
+      config: error.config,
+      code: error.code
+    });
     return Promise.reject(error);
   }
 );
@@ -44,24 +54,49 @@ api.interceptors.request.use(
 // Add response interceptor for debugging
 api.interceptors.response.use(
   (response) => {
-    console.log('API Response:', {
-      url: response.config.url,
-      method: response.config.method,
+    console.log('Received API Response:', {
       status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
       data: response.data,
-      headers: response.headers
+      config: {
+        url: response.config.url,
+        method: response.config.method,
+        baseURL: response.config.baseURL
+      }
     });
     return response;
   },
   (error) => {
+    // Log detailed error information
     console.error('API Error:', {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      data: error.response?.data,
       message: error.message,
-      headers: error.response?.headers
+      code: error.code,
+      name: error.name,
+      stack: error.stack,
+      config: {
+        url: error.config?.url,
+        method: error.config?.method,
+        baseURL: error.config?.baseURL,
+        headers: error.config?.headers,
+        params: error.config?.params
+      },
+      response: error.response ? {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        headers: error.response.headers,
+        data: error.response.data
+      } : undefined
     });
+
+    // Handle specific error cases
+    if (error.code === 'ERR_NETWORK') {
+      console.error('Network Error Details:', {
+        message: error.message,
+        config: error.config
+      });
+    }
+
     return Promise.reject(error);
   }
 );
