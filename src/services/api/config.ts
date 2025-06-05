@@ -12,8 +12,8 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true,
-  timeout: 10000, // 10 second timeout
+  withCredentials: false, // Changed to false to avoid CORS issues
+  timeout: 30000, // Increased timeout to 30 seconds
   maxRedirects: 5,
   maxContentLength: 50 * 1024 * 1024, // 50MB max content length
   validateStatus: (status) => status >= 200 && status < 500
@@ -37,6 +37,10 @@ api.interceptors.request.use(
     if (config.headers) {
       config.headers['Content-Type'] = 'application/json';
       config.headers['Accept'] = 'application/json';
+      // Add CORS headers
+      config.headers['Access-Control-Allow-Origin'] = '*';
+      config.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
+      config.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
     }
 
     return config;

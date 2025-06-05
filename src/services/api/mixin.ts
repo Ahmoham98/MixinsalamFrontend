@@ -30,10 +30,10 @@ export const mixinApi = {
         },
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         },
-        // Add timeout and validate status
-        timeout: 10000,
+        timeout: 30000,
         validateStatus: (status: number) => status >= 200 && status < 500
       };
 
@@ -43,34 +43,46 @@ export const mixinApi = {
       });
 
       // Make the request
-      console.log('Making request with config:', {
-        url: `${BASE_URL}${requestConfig.url}`,
-        method: requestConfig.method,
-        data: requestConfig.data,
-        headers: requestConfig.headers
-      });
-
       const response = await api(requestConfig);
 
-      console.log('Raw response:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: response.headers,
-        data: response.data
-      });
+      console.log('Raw response:', response);
+      console.log('Response data:', response.data);
 
+      // Handle successful response
       if (response.data) {
-        console.log('Processing response data:', response.data);
-        return response.data;
+        // If we have credentials in the response, use them
+        if (response.data['mixin-ceredentials']) {
+          return response.data;
+        }
+        // If we have a success message but no credentials, create a credentials object
+        else if (response.data.message) {
+          return {
+            'mixin-ceredentials': {
+              mixin_url: formattedUrl,
+              access_token: token
+            },
+            message: response.data.message
+          };
+        }
+        // If we have a simple success response
+        else {
+          return {
+            'mixin-ceredentials': {
+              mixin_url: formattedUrl,
+              access_token: token
+            },
+            message: 'Successfully connected to Mixin'
+          };
+        }
       }
+
       throw new Error('Invalid response from server');
     } catch (error: any) {
       console.error('Error details:', {
         name: error.name,
         message: error.message,
         code: error.code,
-        stack: error.stack,
-        isAxiosError: error instanceof AxiosError
+        stack: error.stack
       });
 
       if (error.response) {
@@ -86,8 +98,7 @@ export const mixinApi = {
         console.error('Request error:', {
           method: error.request.method,
           url: error.request.url,
-          headers: error.request.headers,
-          data: error.request.data
+          headers: error.request.headers
         });
       }
 
