@@ -1,0 +1,21 @@
+{
+  "name": "mixinsalamfrontend",
+  "type": "static",
+  "build": {
+    "command": "npm run build",
+    "output": "dist"
+  },
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "https://mixinsalam.liara.run"
+  }
+} 
