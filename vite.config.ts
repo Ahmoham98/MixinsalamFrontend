@@ -13,7 +13,6 @@ export default defineConfig({
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
         secure: false,
-        followRedirects: true,
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
@@ -29,13 +28,7 @@ export default defineConfig({
       '/api': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      },
-      '/basalam': {
-        target: 'https://mixinsalam.liara.run',
-        changeOrigin: true,
-        followRedirects: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
@@ -48,10 +41,9 @@ export default defineConfig({
           });
         },
       },
-      '/mixin': {
+      '/basalam': {
         target: 'https://mixinsalam.liara.run',
         changeOrigin: true,
-        followRedirects: true,
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
