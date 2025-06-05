@@ -7,16 +7,10 @@ export const mixinApi = {
     try {
       console.log('Attempting to validate Mixin credentials:', { url, token });
       
-      const response = await api.post('/mixin/client/', {
-        mixin_url: url,
-        token: token
-      }, {
+      const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`, null, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         },
         // Add these options to handle redirects
         maxRedirects: 5,
@@ -40,16 +34,10 @@ export const mixinApi = {
           // Handle redirect
           const redirectUrl = error.response.headers.location;
           console.log('Redirecting to:', redirectUrl);
-          const redirectResponse = await api.post(redirectUrl, {
-            mixin_url: url,
-            token: token
-          }, {
+          const redirectResponse = await api.post(redirectUrl, null, {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
             }
           });
           return redirectResponse.data;
