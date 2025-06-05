@@ -3,13 +3,22 @@ import axios from 'axios'
 const isDevelopment = import.meta.env.DEV
 export const BASE_URL = isDevelopment ? '/api' : 'https://mixinsalam.liara.run'
 
+// Create a proxy URL for production
+const getProxyUrl = (path: string) => {
+  if (isDevelopment) {
+    return path;
+  }
+  // In production, we'll use a proxy service
+  return `https://cors-anywhere.herokuapp.com/${BASE_URL}${path}`;
+}
+
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: isDevelopment ? BASE_URL : '',  // Empty baseURL in production since we'll use full URLs
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true, // Changed back to true since we're using credentials
+  withCredentials: true,
   // Add these options to handle redirects
   maxRedirects: 5,
   validateStatus: function (status) {
@@ -32,6 +41,11 @@ api.interceptors.request.use(
     console.log('Request Headers:', config.headers);
     console.log('Request Data:', config.data);
     console.log('Base URL:', config.baseURL);
+    
+    // In production, use the full URL with proxy
+    if (!isDevelopment) {
+      config.url = getProxyUrl(config.url || '');
+    }
     
     return config;
   },

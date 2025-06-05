@@ -7,12 +7,15 @@ export const mixinApi = {
     try {
       console.log('=== Mixin Validation Debug ===');
       console.log('Attempting to validate Mixin credentials:', { url, token });
-      console.log('Request URL:', `/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
       
-      const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`, null, {
+      const requestUrl = `/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
+      console.log('Request URL:', requestUrl);
+      
+      const response = await api.post(requestUrl, null, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
         },
         // Add these options to handle redirects
         maxRedirects: 5,
@@ -51,6 +54,7 @@ export const mixinApi = {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
             }
           });
           return redirectResponse.data;
