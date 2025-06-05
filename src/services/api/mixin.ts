@@ -32,6 +32,7 @@ export const mixinApi = {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
+        // Add timeout and validate status
         timeout: 10000,
         validateStatus: (status: number) => status >= 200 && status < 500
       };
@@ -46,29 +47,11 @@ export const mixinApi = {
 
       console.log('Raw response:', response);
       console.log('Response data:', response.data);
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
 
-      // Check if response data exists and has the expected structure
-      if (!response.data) {
-        throw new Error('No data received from server');
-      }
-
-      // Log the exact structure of the response data
-      console.log('Response data structure:', {
-        hasMixinCredentials: 'mixin-ceredentials' in response.data,
-        keys: Object.keys(response.data),
-        fullData: response.data
-      });
-
-      if (response.data['mixin-ceredentials']) {
+      if (response.data) {
         return response.data;
-      } else if (response.data.message) {
-        // If we have a message but no credentials, it might be an error message
-        throw new Error(response.data.message);
-      } else {
-        throw new Error('Invalid response format from server');
       }
+      throw new Error('Invalid response from server');
     } catch (error: any) {
       console.error('Error details:', {
         name: error.name,
