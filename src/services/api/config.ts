@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosHeaders } from 'axios'
 
 // Use the full URL in production, relative path in development
 export const BASE_URL = import.meta.env.PROD 
@@ -11,18 +11,27 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true,
+  // Add timeout
+  timeout: 10000
 })
 
 // Add request interceptor for debugging
 api.interceptors.request.use(
   (config) => {
+    // Ensure headers are properly set
+    const headers = new AxiosHeaders(config.headers);
+    headers.set('Content-Type', 'application/json');
+    headers.set('Accept', 'application/json');
+    config.headers = headers;
+    
     console.log('API Request:', {
       url: config.url,
       method: config.method,
       headers: config.headers,
       params: config.params,
-      data: config.data
+      data: config.data,
+      fullUrl: `${BASE_URL}${config.url}`
     });
     return config;
   },
@@ -39,7 +48,8 @@ api.interceptors.response.use(
       url: response.config.url,
       method: response.config.method,
       status: response.status,
-      data: response.data
+      data: response.data,
+      headers: response.headers
     });
     return response;
   },
@@ -49,7 +59,8 @@ api.interceptors.response.use(
       method: error.config?.method,
       status: error.response?.status,
       data: error.response?.data,
-      message: error.message
+      message: error.message,
+      headers: error.response?.headers
     });
     return Promise.reject(error);
   }
