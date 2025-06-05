@@ -37,6 +37,14 @@ const formatPrice = (price: number): string => {
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
+// Add URL formatting function
+const formatMixinUrl = (url: string): string => {
+  // Remove any existing protocol
+  const cleanUrl = url.replace(/^(https?:\/\/)/, '')
+  // Add https:// protocol
+  return `https://${cleanUrl}`
+}
+
 function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamProducts }: ProductModalProps) {
   const [checkMessage, setCheckMessage] = useState<{ text: string; isSuccess: boolean } | null>(null)
   const [editMessage, setEditMessage] = useState<{ text: string; isSuccess: boolean } | null>(null)
@@ -53,7 +61,7 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
     price: 0,
     description: ''
   })
-  const { mixinCredentials, basalamCredentials } = useAuthStore()
+  const { mixinCredentials, basalamCredentials, setMixinCredentials } = useAuthStore()
   const queryClient = useQueryClient()
 
   // Initialize editedProduct when product changes
@@ -697,7 +705,7 @@ function LoadingModal() {
 }
 
 function HomePage() {
-  const { mixinCredentials, basalamCredentials, clearCredentials } = useAuthStore()
+  const { mixinCredentials, basalamCredentials, clearCredentials, setMixinCredentials } = useAuthStore()
   const navigate = useNavigate()
   const [selectedProduct, setSelectedProduct] = useState<MixinProduct | BasalamProduct | null>(null)
   const [modalType, setModalType] = useState<'mixin' | 'basalam'>('mixin')
@@ -828,6 +836,26 @@ function HomePage() {
 
   // Add loading state check
   const isLoading = isUserLoading || isMixinLoading || isBasalamLoading
+
+  const handleMixinConnect = async (url: string, token: string) => {
+    try {
+      const formattedUrl = formatMixinUrl(url)
+      // Use validateCredentials instead of connect
+      const response = await mixinApi.validateCredentials(formattedUrl, token)
+      if (response && response['mixin-ceredentials']) {
+        setMixinCredentials({ 
+          url: response['mixin-ceredentials'].mixin_url, 
+          access_token: response['mixin-ceredentials'].access_token 
+        })
+        console.log('Mixin connection successful:', response)
+      } else {
+        throw new Error('Invalid response format from server')
+      }
+    } catch (error) {
+      console.error('Mixin connection error:', error)
+      throw error
+    }
+  }
 
   if (userError || mixinError || basalamError) {
     return (
