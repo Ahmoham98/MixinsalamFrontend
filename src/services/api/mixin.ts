@@ -31,7 +31,10 @@ export const mixinApi = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
-        }
+        },
+        // Add timeout and validate status
+        timeout: 10000,
+        validateStatus: (status: number) => status >= 200 && status < 500
       };
 
       console.log('Request configuration:', {
@@ -40,12 +43,24 @@ export const mixinApi = {
       });
 
       // Make the request
+      console.log('Making request with config:', {
+        url: `${BASE_URL}${requestConfig.url}`,
+        method: requestConfig.method,
+        data: requestConfig.data,
+        headers: requestConfig.headers
+      });
+
       const response = await api(requestConfig);
 
-      console.log('Raw response:', response);
-      console.log('Response data:', response.data);
+      console.log('Raw response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+        data: response.data
+      });
 
       if (response.data) {
+        console.log('Processing response data:', response.data);
         return response.data;
       }
       throw new Error('Invalid response from server');
@@ -54,7 +69,8 @@ export const mixinApi = {
         name: error.name,
         message: error.message,
         code: error.code,
-        stack: error.stack
+        stack: error.stack,
+        isAxiosError: error instanceof AxiosError
       });
 
       if (error.response) {
@@ -66,12 +82,30 @@ export const mixinApi = {
         });
       }
 
+      if (error.request) {
+        console.error('Request error:', {
+          method: error.request.method,
+          url: error.request.url,
+          headers: error.request.headers,
+          data: error.request.data
+        });
+      }
+
       if (error.response?.status === 403) {
         throw new Error("we can't login with the following credentials");
       } else if (error.response?.status === 404) {
         throw new Error("Invalid data. could be your url or your access token");
       } else if (error.response?.status === 500) {
         throw new Error("some error occurred... could be from server or from our request.");
+      }
+
+      // Handle network errors
+      if (error.code === 'ERR_NETWORK') {
+        console.error('Network error details:', {
+          message: error.message,
+          config: error.config
+        });
+        throw new Error('Network error: Unable to connect to the server. Please check your internet connection and try again.');
       }
 
       throw error;
