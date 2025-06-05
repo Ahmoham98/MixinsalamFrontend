@@ -122,24 +122,12 @@ function CredentialsPage() {
       const data = await mixinApi.validateCredentials(url.trim(), token.trim());
       console.log('Received data from API:', data);
       
-      // Handle successful response
-      if (data) {
-        // If we have credentials in the response, use them
-        if (data['mixin-ceredentials']) {
-          console.log('Setting credentials from response:', data['mixin-ceredentials']);
-          setMixinCredentials({ 
-            url: data['mixin-ceredentials'].mixin_url, 
-            access_token: data['mixin-ceredentials'].access_token 
-          });
-        } else {
-          // If no credentials in response, use the input values
-          console.log('Setting credentials from input:', { url: url.trim(), token: token.trim() });
-          setMixinCredentials({ 
-            url: url.trim(), 
-            access_token: token.trim() 
-          });
-        }
-        
+      if (data && data['mixin-ceredentials']) {
+        console.log('Setting credentials:', data['mixin-ceredentials']);
+        setMixinCredentials({ 
+          url: data['mixin-ceredentials'].mixin_url, 
+          access_token: data['mixin-ceredentials'].access_token 
+        });
         setIsMixinModalOpen(false);
         alert(data.message || 'Successfully connected to Mixin!');
         window.location.reload();
