@@ -15,12 +15,8 @@ export const mixinApi = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        // Add these options to handle redirects
-        maxRedirects: 5,
-        validateStatus: function (status) {
-          return status >= 200 && status < 500;
+          'X-Requested-With': 'XMLHttpRequest',
+          'Origin': 'https://mixinsalamm.liara.run'
         }
       });
 
@@ -54,7 +50,8 @@ export const mixinApi = {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'
+              'X-Requested-With': 'XMLHttpRequest',
+              'Origin': 'https://mixinsalamm.liara.run'
             }
           });
           return redirectResponse.data;
