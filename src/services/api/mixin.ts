@@ -24,7 +24,7 @@ export const mixinApi = {
       const requestConfig = {
         url: '/mixin/client/',
         method: 'POST',
-        params: {
+        data: {
           mixin_url: formattedUrl,
           token: token
         },
