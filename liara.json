@@ -1,8 +1,7 @@
 {
-  "name": "mixinsalamfrontend",
+  "name": "mixinsalamm",
   "type": "static",
   "build": {
-    "command": "npm run build",
     "output": "dist"
   },
   "routes": [
