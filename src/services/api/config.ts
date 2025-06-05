@@ -75,8 +75,8 @@ api.interceptors.response.use(
       name: error.name,
       stack: error.stack,
       config: {
-      url: error.config?.url,
-      method: error.config?.method,
+        url: error.config?.url,
+        method: error.config?.method,
         baseURL: error.config?.baseURL,
         headers: error.config?.headers,
         params: error.config?.params
@@ -94,7 +94,7 @@ api.interceptors.response.use(
       console.error('Network Error Details:', {
         message: error.message,
         config: error.config
-    });
+      });
     }
 
     return Promise.reject(error);

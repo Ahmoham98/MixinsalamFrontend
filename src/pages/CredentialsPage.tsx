@@ -122,31 +122,32 @@ function CredentialsPage() {
       const data = await mixinApi.validateCredentials(url.trim(), token.trim());
       console.log('Received data from API:', data);
       
-      // Handle successful response
-      if (data) {
-        // If we have credentials in the response, use them
-        if (data['mixin-ceredentials']) {
-          console.log('Setting credentials from response:', data['mixin-ceredentials']);
-          setMixinCredentials({ 
-            url: data['mixin-ceredentials'].mixin_url, 
-            access_token: data['mixin-ceredentials'].access_token 
-          });
-        } else {
-          // If no credentials in response, use the input values
-          console.log('Setting credentials from input:', { url: url.trim(), token: token.trim() });
-          setMixinCredentials({ 
-            url: url.trim(), 
-            access_token: token.trim() 
-          });
-        }
-        
-        setIsMixinModalOpen(false);
-        alert(data.message || 'Successfully connected to Mixin!');
-        window.location.reload();
-      } else {
+      // Check if we have the expected data structure
+      if (!data || !data['mixin-ceredentials']) {
         console.error('Invalid response format:', data);
         throw new Error('Invalid response format from server');
       }
+
+      const credentials = data['mixin-ceredentials'];
+      console.log('Setting credentials:', credentials);
+      
+      // Validate the credentials before setting them
+      if (!credentials.mixin_url || !credentials.access_token) {
+        console.error('Invalid credentials format:', credentials);
+        throw new Error('Invalid credentials format received from server');
+      }
+
+      setMixinCredentials({ 
+        url: credentials.mixin_url, 
+        access_token: credentials.access_token 
+      });
+      
+      console.log('Credentials set successfully');
+      setIsMixinModalOpen(false);
+      alert(data.message || 'Successfully connected to Mixin!');
+      
+      // Use navigate instead of window.location.reload()
+      navigate('/');
     } catch (error: any) {
       console.error('Connection error:', error);
       alert(error.message || 'Failed to connect to Mixin. Please check your credentials.');

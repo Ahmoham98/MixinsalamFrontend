@@ -121,10 +121,10 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
           })
           priceMismatch = true
         } else {
-        setCheckMessage({
+          setCheckMessage({
             text: "محصول شما هم در باسلام و هم در میکسین وحود دارد",
-          isSuccess: true
-        })
+            isSuccess: true
+          })
         }
         changecard = 'mixin,basalam'
         setShowBasalamButton(false)
@@ -153,10 +153,10 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
           })
           priceMismatch = true
         } else {
-        setCheckMessage({
+          setCheckMessage({
             text: "محصول شما هم در باسلام و هم در میکسین وحود دارد",
-          isSuccess: true
-        })
+            isSuccess: true
+          })
         }
         changecard = 'mixin,basalam'
         setShowMixinButton(false)
@@ -260,7 +260,7 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
             data: basalamProductData
           })
           const basalamResponse = await basalamApi.updateProduct(basalamCredentials, basalamProductId, basalamProductData)
-        console.log('Basalam update response:', basalamResponse)
+          console.log('Basalam update response:', basalamResponse)
         } catch (error) {
           console.error('Error updating Basalam product:', error)
           // Don't throw error here, just log it and continue
@@ -334,13 +334,13 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
           <div>
             <label className="font-medium text-lg">Price:</label>
             <div className="relative">
-            <input
-              type="number"
-              value={editedProduct.price}
-              onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
-              className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
-              dir="rtl"
-            />
+              <input
+                type="number"
+                value={editedProduct.price}
+                onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                className="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right"
+                dir="rtl"
+              />
               <p className="text-sm text-gray-500 mt-1 text-right">
                 {formatPrice(editedProduct.price)} تومان
               </p>
@@ -359,46 +359,46 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
         </div>
         <div className="mt-8 flex flex-col items-end gap-4">
           <div className="flex gap-4 w-full justify-end">
-          <div className="flex gap-4">
-            <button
-              onClick={handleEdit}
-              className="flex items-center gap-2 px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors shadow-md"
-            >
+            <div className="flex gap-4">
+              <button
+                onClick={handleEdit}
+                className="flex items-center gap-2 px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors shadow-md"
+              >
                 <span>ویرایش</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+              </button>
+              <button
+                onClick={handleCheck}
+                className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md"
               >
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleCheck}
-              className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md"
-            >
                 <span>بررسی</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
           {checkMessage && (
             <div className="flex flex-col items-end gap-2 w-full">
-            <p className={`text-sm ${checkMessage.isSuccess ? 'text-green-600' : 'text-red-600'}`}>
-              {checkMessage.text}
-            </p>
+              <p className={`text-sm ${checkMessage.isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+                {checkMessage.text}
+              </p>
               {showSyncButton && (
                 <button
                   onClick={handleEdit}
@@ -880,13 +880,13 @@ function HomePage() {
       <header className="sticky top-0 bg-white shadow-md z-20">
         <div className="max-w-7xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
-          <button
-            onClick={handleLogout}
+            <button
+              onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <LogOut size={20} />
+            >
+              <LogOut size={20} />
               <span>خروج</span>
-          </button>
+            </button>
             <div className="text-center flex-1 -ml-[55px]">
               <h1 className="text-3xl font-bold mb-2">به سایت میکسین سلام خیلی خوش آمدید</h1>
               <p className="text-gray-600">سپاس بابت اینکه ما را انتخاب کردید</p>
@@ -898,7 +898,7 @@ function HomePage() {
       {/* Main Content */}
       <main className="p-8">
         <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Common Products Header */}
             <div className="col-span-2 flex justify-center">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">محصولات مشترک در باسلام و میکسین</h2>
@@ -991,91 +991,91 @@ function HomePage() {
               <h2 className="text-2xl font-bold text-gray-800 mb-4">محصولات غیرمشترک در باسلام و میکسین</h2>
             </div>
 
-          {/* Mixin Products */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div 
-              className="flex items-center justify-between cursor-pointer mb-4"
+            {/* Mixin Products */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div 
+                className="flex items-center justify-between cursor-pointer mb-4"
               >
                 <button 
                   className="text-gray-500 hover:text-gray-700 focus:outline-none"
-              onClick={() => setIsMixinSectionOpen(!isMixinSectionOpen)}
-            >
-                {isMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-              </button>
+                  onClick={() => setIsMixinSectionOpen(!isMixinSectionOpen)}
+                >
+                  {isMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                </button>
                 <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در میکسین</h2>
-            </div>
-            {isMixinSectionOpen && (
+              </div>
+              {isMixinSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                {!mixinCredentials ? (
-                  <div className="text-center py-4 text-gray-500">Please connect to Mixin first</div>
-                ) : isMixinLoading ? (
-                  <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-2">Loading Mixin products...</p>
-                  </div>
+                  {!mixinCredentials ? (
+                    <div className="text-center py-4 text-gray-500">Please connect to Mixin first</div>
+                  ) : isMixinLoading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                      <p className="mt-2">Loading Mixin products...</p>
+                    </div>
                   ) : uniqueMixinProducts.length === 0 ? (
                     <div className="text-center py-4 text-gray-500">No unique Mixin products found</div>
-                ) : (
+                  ) : (
                     uniqueMixinProducts.map((product: MixinProduct) => (
-                    <div
-                      key={product.id}
-                      onClick={() => handleProductClick(product.id, 'mixin')}
+                      <div
+                        key={product.id}
+                        onClick={() => handleProductClick(product.id, 'mixin')}
                         className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 text-right"
                         dir="rtl"
-                    >
-                      <h3 className="font-medium">{product.name}</h3>
+                      >
+                        <h3 className="font-medium">{product.name}</h3>
                         <p className="text-gray-600">قیمت: {formatPrice(product.price)} تومان</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
 
-          {/* Basalam Products */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div 
-              className="flex items-center justify-between cursor-pointer mb-4"
+            {/* Basalam Products */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div 
+                className="flex items-center justify-between cursor-pointer mb-4"
               >
                 <button 
                   className="text-gray-500 hover:text-gray-700 focus:outline-none"
-              onClick={() => setIsBasalamSectionOpen(!isBasalamSectionOpen)}
-            >
-                {isBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-              </button>
+                  onClick={() => setIsBasalamSectionOpen(!isBasalamSectionOpen)}
+                >
+                  {isBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                </button>
                 <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در باسلام</h2>
-            </div>
-            {isBasalamSectionOpen && (
+              </div>
+              {isBasalamSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                {!basalamCredentials ? (
-                  <div className="text-center py-4 text-gray-500">Please connect to Basalam first</div>
-                ) : isUserLoading ? (
-                  <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-2">Loading user data...</p>
-                  </div>
-                ) : isBasalamLoading ? (
-                  <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-2">Loading Basalam products...</p>
-                  </div>
+                  {!basalamCredentials ? (
+                    <div className="text-center py-4 text-gray-500">Please connect to Basalam first</div>
+                  ) : isUserLoading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                      <p className="mt-2">Loading user data...</p>
+                    </div>
+                  ) : isBasalamLoading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                      <p className="mt-2">Loading Basalam products...</p>
+                    </div>
                   ) : uniqueBasalamProducts.length === 0 ? (
                     <div className="text-center py-4 text-gray-500">No unique Basalam products found</div>
-                ) : (
+                  ) : (
                     uniqueBasalamProducts.map((product: BasalamProduct) => (
-                    <div
-                      key={product.id}
-                      onClick={() => handleProductClick(product.id, 'basalam')}
+                      <div
+                        key={product.id}
+                        onClick={() => handleProductClick(product.id, 'basalam')}
                         className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 text-right"
                         dir="rtl"
-                    >
-                      <h3 className="font-medium">{product.title}</h3>
+                      >
+                        <h3 className="font-medium">{product.title}</h3>
                         <p className="text-gray-600">قیمت: {formatPrice(rialToToman(product.price))} تومان</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
