@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const isDevelopment = import.meta.env.DEV
-export const BASE_URL = isDevelopment ? '/api' : 'https://mixinsalam.liara.run'
+export const BASE_URL = isDevelopment ? '/api' : '/api'  // Use proxy in both dev and prod
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -9,22 +9,12 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true,
-  // Add these options to handle redirects
-  maxRedirects: 5,
-  validateStatus: function (status) {
-    return status >= 200 && status < 500; // Accept all status codes less than 500
-  }
+  withCredentials: true
 })
 
-// Add request interceptor to handle trailing slashes and add debug logging
+// Add request interceptor for debugging
 api.interceptors.request.use(
   (config) => {
-    // Ensure URLs don't have double slashes
-    if (config.url) {
-      config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
-    }
-    
     // Add debug logging
     console.log('=== API Request Debug ===');
     console.log('Request URL:', config.url);
@@ -32,9 +22,6 @@ api.interceptors.request.use(
     console.log('Request Headers:', config.headers);
     console.log('Request Data:', config.data);
     console.log('Base URL:', config.baseURL);
-    
-    // Add CORS headers for the request
-    config.headers['Origin'] = 'https://mixinsalamm.liara.run';
     
     return config;
   },

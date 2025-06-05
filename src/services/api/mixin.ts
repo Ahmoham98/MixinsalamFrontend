@@ -14,9 +14,7 @@ export const mixinApi = {
       const response = await api.post(requestUrl, null, {
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          'Origin': 'https://mixinsalamm.liara.run'
+          'Accept': 'application/json'
         }
       });
 
@@ -41,21 +39,6 @@ export const mixinApi = {
         console.error('Response Status:', error.response.status);
         console.error('Response Headers:', error.response.headers);
         console.error('Response Data:', error.response.data);
-        
-        if (error.response.status === 307) {
-          // Handle redirect
-          const redirectUrl = error.response.headers.location;
-          console.log('Redirecting to:', redirectUrl);
-          const redirectResponse = await api.post(redirectUrl, null, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest',
-              'Origin': 'https://mixinsalamm.liara.run'
-            }
-          });
-          return redirectResponse.data;
-        }
         
         if (error.response.status === 403) {
           throw new Error("we can't login with the following credentials");
