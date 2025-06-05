@@ -109,35 +109,26 @@ function CredentialsPage() {
 
   const handleMixinConnect = async (url: string, token: string) => {
     try {
-      // Validate input parameters
-      if (!url || !url.trim()) {
-        throw new Error('Please enter a valid Mixin URL');
-      }
-      
-      if (!token || !token.trim()) {
-        throw new Error('Please enter a valid access token');
-      }
-
-      console.log('Attempting to connect with:', { url, token });
-      const data = await mixinApi.validateCredentials(url.trim(), token.trim());
-      console.log('Received data from API:', data);
+      console.log('Attempting to connect with:', { url, token })
+      const data = await mixinApi.validateCredentials(url, token)
+      console.log('Received data from API:', data)
       
       if (data && data['mixin-ceredentials']) {
-        console.log('Setting credentials:', data['mixin-ceredentials']);
+        console.log('Setting credentials:', data['mixin-ceredentials'])
         setMixinCredentials({ 
           url: data['mixin-ceredentials'].mixin_url, 
           access_token: data['mixin-ceredentials'].access_token 
-        });
-        setIsMixinModalOpen(false);
-        alert(data.message || 'Successfully connected to Mixin!');
-        window.location.reload();
+        })
+        setIsMixinModalOpen(false)
+        alert(data.message || 'Successfully connected to Mixin!')
+        window.location.reload()
       } else {
-        console.error('Invalid response format:', data);
-        throw new Error('Invalid response format from server');
+        console.error('Invalid response format:', data)
+        throw new Error('Invalid response format from server')
       }
     } catch (error: any) {
-      console.error('Connection error:', error);
-      alert(error.message || 'Failed to connect to Mixin. Please check your credentials.');
+      console.error('Connection error:', error)
+      alert(error.message || 'Failed to connect to Mixin. Please check your credentials.')
     }
   }
 

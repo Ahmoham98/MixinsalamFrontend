@@ -1,100 +1,27 @@
-import { api, handleApiError, BASE_URL } from './config'
+import { api, handleApiError } from './config'
 import type { MixinCredentials, MixinProduct } from '../../types'
 import { AxiosError } from 'axios'
 
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      console.log('Starting Mixin credentials validation...');
-      
-      // Validate input parameters
-      if (!url || typeof url !== 'string') {
-        throw new Error('Invalid URL: URL must be a non-empty string');
-      }
-      
-      if (!token || typeof token !== 'string') {
-        throw new Error('Invalid token: Token must be a non-empty string');
-      }
-      
-      // Ensure URL is properly formatted
-      const formattedUrl = url.replace(/^(https?:\/\/)/, '');
-      console.log('Formatted URL:', formattedUrl);
-      
-      // Prepare request configuration
-      const requestConfig = {
-        url: '/mixin/client/',
-        method: 'POST',
-        params: {
-          mixin_url: formattedUrl,
-          token: token
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        // Add timeout and validate status
-        timeout: 10000,
-        validateStatus: (status: number) => status >= 200 && status < 500
-      };
-
-      console.log('Request configuration:', {
-        ...requestConfig,
-        fullUrl: `${BASE_URL}${requestConfig.url}`
-      });
-
-      // Make the request
-      const response = await api(requestConfig);
-
-      console.log('Raw response:', response);
-      console.log('Response data:', response.data);
+      const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`)
 
       if (response.data) {
-        return response.data;
+        return response.data
       }
-      throw new Error('Invalid response from server');
+      throw new Error('Invalid response from server')
     } catch (error: any) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        code: error.code,
-        stack: error.stack
-      });
-
-      if (error.response) {
-        console.error('Response error:', {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data,
-          headers: error.response.headers
-        });
-      }
-
-      if (error.request) {
-        console.error('Request error:', {
-          method: error.request.method,
-          url: error.request.url,
-          headers: error.request.headers
-        });
-      }
-
+      console.error('Full error object:', error)
+      console.error('Error response:', error.response)
       if (error.response?.status === 403) {
-        throw new Error("we can't login with the following credentials");
+        throw new Error("we can't login with the following credentials")
       } else if (error.response?.status === 404) {
-        throw new Error("Invalid data. could be your url or your access token");
+        throw new Error("Invalid data. could be your url or your access token")
       } else if (error.response?.status === 500) {
-        throw new Error("some error occurred... could be from server or from our request.");
+        throw new Error("some error occurred... could be from server or from our request.")
       }
-
-      // Handle network errors
-      if (error.code === 'ERR_NETWORK') {
-        console.error('Network error details:', {
-          message: error.message,
-          config: error.config
-        });
-        throw new Error('Network error: Unable to connect to the server. Please check your internet connection and try again.');
-      }
-
-      throw error;
+      throw error
     }
   },
 
