@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-export const BASE_URL = '/api'
+// Use the full URL in production, relative path in development
+export const BASE_URL = import.meta.env.PROD 
+  ? 'https://mixinsalam.liara.run'
+  : '/api'
 
 export const api = axios.create({
   baseURL: BASE_URL,
