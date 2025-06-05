@@ -7,6 +7,15 @@ export const mixinApi = {
     try {
       console.log('Starting Mixin credentials validation...');
       
+      // Validate input parameters
+      if (!url || typeof url !== 'string') {
+        throw new Error('Invalid URL: URL must be a non-empty string');
+      }
+      
+      if (!token || typeof token !== 'string') {
+        throw new Error('Invalid token: Token must be a non-empty string');
+      }
+      
       // Ensure URL is properly formatted
       const formattedUrl = url.replace(/^(https?:\/\/)/, '');
       console.log('Formatted URL:', formattedUrl);
