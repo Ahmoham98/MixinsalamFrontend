@@ -234,7 +234,7 @@ function CredentialsPage() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center">Connect Your Accounts</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">حساب های خود را متصل کنید</h1>
         <div className="space-y-4">
           <button
             onClick={() => setIsMixinModalOpen(true)}
@@ -247,7 +247,7 @@ function CredentialsPage() {
             {mixinCredentials ? (
               <>
                 <span>✓</span>
-                <span className="ml-2">Mixin Connected</span>
+                <span className="ml-2">میکسین متصل شد</span>
               </>
             ) : (
               'Connect to Mixin'
@@ -264,7 +264,7 @@ function CredentialsPage() {
             {basalamCredentials ? (
               <>
                 <span className="text-xl mr-2">✓</span>
-                <span>Basalam Connected</span>
+                <span>باسلام متصل شد</span>
               </>
             ) : (
               'Connect to Basalam'
