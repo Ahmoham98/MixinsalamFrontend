@@ -20,7 +20,7 @@ export const productionApi = axios.create({
 
 // Mixin API instance for Mixin-specific requests
 export const productionMixinApi = axios.create({
-  baseURL: `${PRODUCTION_BASE_URL}/products`,
+  baseURL: PRODUCTION_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
