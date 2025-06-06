@@ -57,7 +57,8 @@ export const basalamApi = {
       });
       console.log('Request Params:', { basalam_page: 1 });
       
-      const response = await getBasalamApi().get(`/products/my-basalam-products/${vendorId}`, {
+      // Use the main API instance for products in both development and production
+      const response = await api.get(`/products/my-basalam-products/${vendorId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
           'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ export const basalamApi = {
 
   getProductById: async (credentials: BasalamCredentials, productId: number): Promise<BasalamProduct | null> => {
     try {
-      const response = await getBasalamApi().get(`/products/basalam/${productId}`, {
+      const response = await api.get(`/products/basalam/${productId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -151,7 +152,7 @@ export const basalamApi = {
     formData.append('name', productData.name)
     formData.append('price', productData.price.toString())
 
-      const response = await getBasalamApi().patch(
+      const response = await api.patch(
         `/products/update/basalam/${productId}`,
         formData,
       {
