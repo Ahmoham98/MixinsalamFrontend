@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-export const BASE_URL = '/api'
+// Use the correct base URL based on the environment
+export const BASE_URL = import.meta.env.PROD 
+  ? 'https://mixinsalamm.liara.run'  // Production URL
+  : '/api'  // Development URL (uses Vite proxy)
 
 export const api = axios.create({
   baseURL: BASE_URL,

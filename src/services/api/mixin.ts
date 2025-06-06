@@ -5,7 +5,10 @@ import { AxiosError } from 'axios'
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`)
+      const response = await api.post(`/mixin/client/validate`, {
+        mixin_url: url,
+        token: token
+      })
 
       if (response.data) {
         return response.data
