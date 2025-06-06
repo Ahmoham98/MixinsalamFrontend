@@ -5,10 +5,10 @@ import { AxiosError } from 'axios'
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      console.log('Sending validation request to:', `${api.defaults.baseURL}/mixin/client/validate`)
+      console.log('Sending validation request to:', `${api.defaults.baseURL}/mixin/client/`)
       console.log('With data:', { mixin_url: url, token: token })
 
-      const response = await api.post('/mixin/client/validate', {
+      const response = await api.post('/mixin/client/', {
         mixin_url: url,
         token: token
       }, {
