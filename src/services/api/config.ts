@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const BASE_URL = '/api'
+export const BASE_URL = ''  // Empty base URL since we're using absolute paths
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -11,7 +11,7 @@ export const api = axios.create({
     'Pragma': 'no-cache',
     'Expires': '0'
   },
-  withCredentials: true
+  withCredentials: false  // Set to false to avoid CORS issues
 })
 
 // Add response interceptor for debugging
