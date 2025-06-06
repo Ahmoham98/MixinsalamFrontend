@@ -882,7 +882,7 @@ function HomePage() {
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
                 <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
                   onClick={() => setIsCommonMixinSectionOpen(!isCommonMixinSectionOpen)}
                 >
                   {isCommonMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
@@ -923,7 +923,7 @@ function HomePage() {
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
                 <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
                   onClick={() => setIsCommonBasalamSectionOpen(!isCommonBasalamSectionOpen)}
                 >
                   {isCommonBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
@@ -969,14 +969,14 @@ function HomePage() {
               className="flex items-center justify-between cursor-pointer mb-4"
               >
                 <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
-              onClick={() => setIsMixinSectionOpen(!isMixinSectionOpen)}
-            >
-                {isMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-              </button>
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
+                  onClick={() => setIsMixinSectionOpen(!isMixinSectionOpen)}
+                >
+                  {isMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                </button>
                 <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در میکسین</h2>
-            </div>
-            {isMixinSectionOpen && (
+              </div>
+              {isMixinSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                 {!mixinCredentials ? (
                   <div className="text-center py-4 text-gray-500">Please connect to Mixin first</div>
@@ -1010,14 +1010,14 @@ function HomePage() {
               className="flex items-center justify-between cursor-pointer mb-4"
               >
                 <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
-              onClick={() => setIsBasalamSectionOpen(!isBasalamSectionOpen)}
-            >
-                {isBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-              </button>
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
+                  onClick={() => setIsBasalamSectionOpen(!isBasalamSectionOpen)}
+                >
+                  {isBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                </button>
                 <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در باسلام</h2>
-            </div>
-            {isBasalamSectionOpen && (
+              </div>
+              {isBasalamSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                 {!basalamCredentials ? (
                   <div className="text-center py-4 text-gray-500">Please connect to Basalam first</div>
