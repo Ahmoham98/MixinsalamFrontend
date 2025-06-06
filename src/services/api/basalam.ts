@@ -1,12 +1,13 @@
 import { api, handleApiError } from './config'
 import type { BasalamCredentials, BasalamProduct, BasalamUserData } from '../../types'
 import { AxiosError } from 'axios'
+import { getBasalamApi } from './apiSelector'
 
 export const basalamApi = {
   getAccessToken: async (code: string, state: string) => {
     try {
       console.log('Exchanging code for token:', { code, state })
-      const response = await api.post('/basalam/client/get-user-access-token/', {
+      const response = await getBasalamApi().post('/basalam/client/get-user-access-token/', {
         code,
         state
       })
@@ -24,7 +25,7 @@ export const basalamApi = {
 
   getUserData: async (credentials: BasalamCredentials): Promise<BasalamUserData | null> => {
     try {
-      const response = await api.get('/basalam/client/me', {
+      const response = await getBasalamApi().get('/basalam/client/me', {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -49,7 +50,7 @@ export const basalamApi = {
       });
       console.log('Request Params:', { basalam_page: 1 });
       
-      const response = await api.get(`/products/my-basalam-products/${vendorId}`, {
+      const response = await getBasalamApi().get(`/products/my-basalam-products/${vendorId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
           'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ export const basalamApi = {
 
   getProductById: async (credentials: BasalamCredentials, productId: number): Promise<BasalamProduct | null> => {
     try {
-      const response = await api.get(`/products/basalam/${productId}`, {
+      const response = await getBasalamApi().get(`/products/basalam/${productId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -143,7 +144,7 @@ export const basalamApi = {
     formData.append('name', productData.name)
     formData.append('price', productData.price.toString())
 
-      const response = await api.patch(
+      const response = await getBasalamApi().patch(
         `/products/update/basalam/${productId}`,
         formData,
       {
