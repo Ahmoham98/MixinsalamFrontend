@@ -6,7 +6,7 @@ import { getApi } from './apiSelector'
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      const response = await getApi().post(`/mixin/client/validate`, {
+      const response = await getApi().post(`/mixin/client/`, {
         mixin_url: url,
         token: token
       })
