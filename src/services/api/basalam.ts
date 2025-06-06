@@ -7,7 +7,7 @@ export const basalamApi = {
   getAccessToken: async (code: string, state: string) => {
     try {
       console.log('Exchanging code for token:', { code, state })
-      const response = await getBasalamApi().post('/client/get-user-access-token/', {
+      const response = await getBasalamApi().post('/basalam/client/get-user-access-token/', {
         code,
         state
       })
@@ -25,7 +25,7 @@ export const basalamApi = {
 
   getUserData: async (credentials: BasalamCredentials): Promise<BasalamUserData | null> => {
     try {
-      const response = await getBasalamApi().get('/client/me', {
+      const response = await getBasalamApi().get('/basalam/client/me', {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },

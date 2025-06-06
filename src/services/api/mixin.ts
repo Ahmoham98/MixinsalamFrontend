@@ -9,10 +9,10 @@ export const mixinApi = {
       console.log('Sending request to validate Mixin credentials:', {
         url,
         token,
-        endpoint: '/client/'
+        endpoint: '/mixin/client/'
       });
 
-      const response = await getMixinApi().post(`/client/`, null, {
+      const response = await getMixinApi().post(`/mixin/client/`, null, {
         params: {
           mixin_url: url,
           token: token
