@@ -24,7 +24,7 @@ export const productionMixinApi = axios.create({
 
 // Basalam API instance for Basalam-specific requests
 export const productionBasalamApi = axios.create({
-  baseURL: PRODUCTION_BASE_URL,
+  baseURL: `${PRODUCTION_BASE_URL}/basalam`,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
