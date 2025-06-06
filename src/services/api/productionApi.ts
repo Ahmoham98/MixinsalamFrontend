@@ -7,15 +7,9 @@ export const productionApi = axios.create({
   baseURL: PRODUCTION_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    'Access-Control-Allow-Headers': '*'
+    'Accept': 'application/json'
   },
-  withCredentials: true
+  withCredentials: false
 })
 
 // Mixin API instance for Mixin-specific requests
@@ -23,15 +17,9 @@ export const productionMixinApi = axios.create({
   baseURL: PRODUCTION_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    'Access-Control-Allow-Headers': '*'
+    'Accept': 'application/json'
   },
-  withCredentials: true
+  withCredentials: false
 })
 
 // Basalam API instance for Basalam-specific requests
@@ -39,29 +27,15 @@ export const productionBasalamApi = axios.create({
   baseURL: `${PRODUCTION_BASE_URL}/basalam`,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    'Access-Control-Allow-Headers': '*'
+    'Accept': 'application/json'
   },
-  withCredentials: true
+  withCredentials: false
 })
 
 // Add response interceptor for debugging
 const addInterceptors = (instance: typeof productionApi) => {
   instance.interceptors.response.use(
     (response) => {
-      // Add cache control headers to response
-      response.headers['cache-control'] = 'no-cache, no-store, must-revalidate';
-      response.headers['pragma'] = 'no-cache';
-      response.headers['expires'] = '0';
-      response.headers['access-control-allow-origin'] = '*';
-      response.headers['access-control-allow-methods'] = 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS';
-      response.headers['access-control-allow-headers'] = '*';
-      
       console.log('Production API Response:', {
         url: response.config.url,
         method: response.config.method,
