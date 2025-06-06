@@ -1,15 +1,6 @@
 import axios from 'axios'
 
-// Use the correct base URL based on the environment
-const isProduction = import.meta.env.PROD
-const BASE_URL = isProduction 
-  ? 'https://mixinsalamm.liara.run'  // Production URL
-  : '/api'  // Development URL (uses Vite proxy)
-
-console.log('API Configuration:', {
-  environment: isProduction ? 'production' : 'development',
-  baseURL: BASE_URL
-})
+export const BASE_URL = '/api'
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -22,24 +13,6 @@ export const api = axios.create({
   },
   withCredentials: true
 })
-
-// Add request interceptor for debugging
-api.interceptors.request.use(
-  (config) => {
-    console.log('API Request:', {
-      url: config.url,
-      method: config.method,
-      baseURL: config.baseURL,
-      headers: config.headers,
-      data: config.data
-    });
-    return config;
-  },
-  (error) => {
-    console.error('API Request Error:', error);
-    return Promise.reject(error);
-  }
-);
 
 // Add response interceptor for debugging
 api.interceptors.response.use(
