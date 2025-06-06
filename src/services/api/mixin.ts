@@ -1,7 +1,7 @@
 import { api, handleApiError } from './config'
 import type { MixinCredentials, MixinProduct } from '../../types'
 import { AxiosError } from 'axios'
-import { getApi } from './apiSelector'
+import { getMixinApi } from './apiSelector'
 
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
@@ -12,7 +12,7 @@ export const mixinApi = {
         endpoint: '/mixin/client/'
       });
 
-      const response = await getApi().post(`/mixin/client/`, null, {
+      const response = await getMixinApi().post(`/mixin/client/`, null, {
         params: {
           mixin_url: url,
           token: token
@@ -50,7 +50,7 @@ export const mixinApi = {
         token: credentials.access_token
       });
 
-      const response = await getApi().get('/products/my-mixin-products', {
+      const response = await getMixinApi().get('/products/my-mixin-products', {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -87,7 +87,7 @@ export const mixinApi = {
 
   getProductById: async (credentials: MixinCredentials, productId: number): Promise<MixinProduct | null> => {
     try {
-      const response = await getApi().get(`/products/mixin/${productId}`, {
+      const response = await getMixinApi().get(`/products/mixin/${productId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -125,7 +125,7 @@ export const mixinApi = {
 
       console.log('Sending update request with data:', updatedData)
 
-      const response = await getApi().put(
+      const response = await getMixinApi().put(
         `/products/update/mixin/${productId}`,
         updatedData,
         {
@@ -192,7 +192,7 @@ export const mixinApi = {
     }
 
     try {
-      const response = await getApi().post(
+      const response = await getMixinApi().post(
         '/products/create/mixin',
         productData,
         {
