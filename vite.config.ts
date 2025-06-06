@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import type { ServerResponse } from 'http'
+import type { IncomingMessage } from 'http'
+import type { ProxyOptions } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -106,6 +109,20 @@ export default defineConfig({
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
         },
+        bypass: (req: IncomingMessage, res: ServerResponse, _options: ProxyOptions) => {
+          // Handle OPTIONS preflight request
+          if (req.method === 'OPTIONS') {
+            res.writeHead(204, {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+              'Access-Control-Allow-Headers': '*',
+              'Access-Control-Max-Age': '86400'
+            });
+            res.end();
+            return false;
+          }
+          return null;
+        }
       }
     }
   }
