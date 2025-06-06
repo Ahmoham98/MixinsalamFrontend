@@ -10,7 +10,10 @@ export const productionApi = axios.create({
     'Accept': 'application/json',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
-    'Expires': '0'
+    'Expires': '0',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': '*'
   },
   withCredentials: true
 })
@@ -23,7 +26,10 @@ export const productionMixinApi = axios.create({
     'Accept': 'application/json',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
-    'Expires': '0'
+    'Expires': '0',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': '*'
   },
   withCredentials: true
 })
@@ -36,7 +42,10 @@ export const productionBasalamApi = axios.create({
     'Accept': 'application/json',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
-    'Expires': '0'
+    'Expires': '0',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': '*'
   },
   withCredentials: true
 })
@@ -49,6 +58,9 @@ const addInterceptors = (instance: typeof productionApi) => {
       response.headers['cache-control'] = 'no-cache, no-store, must-revalidate';
       response.headers['pragma'] = 'no-cache';
       response.headers['expires'] = '0';
+      response.headers['access-control-allow-origin'] = '*';
+      response.headers['access-control-allow-methods'] = 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS';
+      response.headers['access-control-allow-headers'] = '*';
       
       console.log('Production API Response:', {
         url: response.config.url,

@@ -27,6 +27,9 @@ export default defineConfig({
             proxyRes.headers['cache-control'] = 'no-cache, no-store, must-revalidate';
             proxyRes.headers['pragma'] = 'no-cache';
             proxyRes.headers['expires'] = '0';
+            proxyRes.headers['access-control-allow-origin'] = '*';
+            proxyRes.headers['access-control-allow-methods'] = 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS';
+            proxyRes.headers['access-control-allow-headers'] = '*';
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
         },
@@ -49,6 +52,9 @@ export default defineConfig({
             proxyRes.headers['cache-control'] = 'no-cache, no-store, must-revalidate';
             proxyRes.headers['pragma'] = 'no-cache';
             proxyRes.headers['expires'] = '0';
+            proxyRes.headers['access-control-allow-origin'] = '*';
+            proxyRes.headers['access-control-allow-methods'] = 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS';
+            proxyRes.headers['access-control-allow-headers'] = '*';
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
         },
@@ -70,6 +76,9 @@ export default defineConfig({
             proxyRes.headers['cache-control'] = 'no-cache, no-store, must-revalidate';
             proxyRes.headers['pragma'] = 'no-cache';
             proxyRes.headers['expires'] = '0';
+            proxyRes.headers['access-control-allow-origin'] = '*';
+            proxyRes.headers['access-control-allow-methods'] = 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS';
+            proxyRes.headers['access-control-allow-headers'] = '*';
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
         },
