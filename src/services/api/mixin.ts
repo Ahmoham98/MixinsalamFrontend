@@ -1,4 +1,4 @@
-import { api } from './config'
+import { api, handleApiError } from './config'
 import type { MixinCredentials, MixinProduct } from '../../types'
 import { AxiosError } from 'axios'
 import { getMixinApi } from './apiSelector'
