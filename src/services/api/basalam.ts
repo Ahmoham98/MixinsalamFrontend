@@ -6,15 +6,15 @@ import { getBasalamApi } from './apiSelector'
 // Helper function to get the correct path based on environment
 const getBasalamPath = (path: string) => {
   const isProduction = process.env.NODE_ENV === 'production'
-  // In production, the base URL already includes /basalam
-  return isProduction ? path.replace('/basalam', '') : path
+  // In production, we don't need to modify the path
+  return path
 }
 
 export const basalamApi = {
   getAccessToken: async (code: string, state: string) => {
     try {
       console.log('Exchanging code for token:', { code, state })
-      const response = await getBasalamApi().post(getBasalamPath('/basalam/client/get-user-access-token/'), {
+      const response = await getBasalamApi().post('/basalam/client/get-user-access-token/', {
         code,
         state
       })
@@ -32,7 +32,7 @@ export const basalamApi = {
 
   getUserData: async (credentials: BasalamCredentials): Promise<BasalamUserData | null> => {
     try {
-      const response = await getBasalamApi().get(getBasalamPath('/basalam/client/me'), {
+      const response = await getBasalamApi().get('/basalam/client/me', {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
