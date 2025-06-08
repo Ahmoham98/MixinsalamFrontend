@@ -34,10 +34,10 @@ export const basalamApi = {
     try {
       console.log('Sending request to validate Basalam credentials:', {
         token,
-        endpoint: '/client/me'
+        endpoint: '/basalam/client/me'
       });
 
-      const response = await getBasalamClientApi().get('/client/me', {
+      const response = await getBasalamApi().get('/basalam/client/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export const basalamApi = {
         vendorId
       });
 
-      const response = await getBasalamProductsApi().get(`/products/my-basalam-products/${vendorId}`, {
+      const response = await getBasalamApi().get(`/products/my-basalam-products/${vendorId}`, {
         headers: {
           'Authorization': `Bearer ${credentials.access_token}`,
           'Content-Type': 'application/json',
