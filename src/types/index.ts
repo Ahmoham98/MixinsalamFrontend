@@ -1,6 +1,6 @@
 export interface MixinCredentials {
+  url: string;
   access_token: string;
-  mixin_url: string;
 }
 
 export interface BasalamCredentials {
