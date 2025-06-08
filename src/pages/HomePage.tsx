@@ -227,11 +227,8 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
 
         // Create updated data by merging original data with new values
         const mixinProductData = {
-          ...originalProduct,
           name: editedProduct.name,
-          price: Number(editedProduct.price),
-          description: editedProduct.description || '',
-          extra_fields: []
+          price: Number(editedProduct.price)
         }
 
         console.log('Sending Mixin update request with data:', mixinProductData)
@@ -252,7 +249,7 @@ function ProductModal({ isOpen, onClose, product, type, mixinProducts, basalamPr
             data: basalamProductData
           })
           const basalamResponse = await basalamApi.updateProduct(basalamCredentials, basalamProductId, basalamProductData)
-        console.log('Basalam update response:', basalamResponse)
+          console.log('Basalam update response:', basalamResponse)
         } catch (error) {
           console.error('Error updating Basalam product:', error)
           // Don't throw error here, just log it and continue
@@ -724,7 +721,7 @@ function HomePage() {
   const { data: mixinProducts, isLoading: isMixinLoading, error: mixinError } = useQuery({
     queryKey: ['mixinProducts'],
     queryFn: () => mixinApi.getProducts(mixinCredentials!),
-    enabled: !!mixinCredentials?.url && !!mixinCredentials?.access_token,
+    enabled: !!mixinCredentials?.mixin_url && !!mixinCredentials?.access_token,
     retry: 1,
     staleTime: 30000,
   })
