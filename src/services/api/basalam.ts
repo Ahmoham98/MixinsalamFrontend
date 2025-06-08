@@ -3,8 +3,9 @@ import type { BasalamCredentials, BasalamProduct, BasalamUserData } from '../../
 import { AxiosError } from 'axios'
 import { getBasalamApi } from './apiSelector'
 
-// Helper function to get the correct path - always remove /basalam prefix
+// Helper function to get the correct path
 const getBasalamPath = (path: string) => {
+  // Remove /basalam prefix since it's now in the base URL
   return path.replace('/basalam', '')
 }
 

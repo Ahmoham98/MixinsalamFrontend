@@ -1,8 +1,9 @@
 import { getBasalamApi } from './apiSelector'
 import type { BasalamProfile } from '../../types/basalam'
 
-// Helper function to get the correct path - always remove /basalam prefix
+// Helper function to get the correct path
 const getBasalamPath = (path: string) => {
+  // Remove /basalam prefix since it's now in the base URL
   return path.replace('/basalam', '')
 }
 
