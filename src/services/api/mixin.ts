@@ -1,27 +1,45 @@
-import { api, handleApiError } from './config'
+import { api } from './config'
 import type { MixinCredentials, MixinProduct } from '../../types'
 import { AxiosError } from 'axios'
+import { getMixinApi } from './apiSelector'
 
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`)
+      console.log('Sending request to validate Mixin credentials:', {
+        url,
+        token,
+        endpoint: '/mixin/client/'
+      });
+
+      const response = await getMixinApi().post(`/mixin/client/`, null, {
+        params: {
+          mixin_url: url,
+          token: token
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+
+      console.log('Mixin validation response:', response.data);
 
       if (response.data) {
-        return response.data
+        return response.data;
       }
-      throw new Error('Invalid response from server')
+      throw new Error('Invalid response from server');
     } catch (error: any) {
-      console.error('Full error object:', error)
-      console.error('Error response:', error.response)
+      console.error('Full error object:', error);
+      console.error('Error response:', error.response);
       if (error.response?.status === 403) {
-        throw new Error("we can't login with the following credentials")
+        throw new Error("we can't login with the following credentials");
       } else if (error.response?.status === 404) {
-        throw new Error("Invalid data. could be your url or your access token")
+        throw new Error("Invalid data. could be your url or your access token");
       } else if (error.response?.status === 500) {
-        throw new Error("some error occurred... could be from server or from our request.")
+        throw new Error("some error occurred... could be from server or from our request.");
       }
-      throw error
+      throw error;
     }
   },
 
@@ -32,14 +50,16 @@ export const mixinApi = {
         token: credentials.access_token
       });
 
-      const response = await api.get('/products/my-mixin-products', {
+      const response = await getMixinApi().get('/products/my-mixin-products', {
         headers: {
-          Authorization: `Bearer ${credentials.access_token}`,
+          'Authorization': `Bearer ${credentials.access_token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         params: {
           mixin_url: credentials.url,
-          mixin_page: 1,
-        },
+          mixin_page: 1
+        }
       });
 
       console.log('Mixin products response:', response.data);
@@ -69,7 +89,7 @@ export const mixinApi = {
 
   getProductById: async (credentials: MixinCredentials, productId: number): Promise<MixinProduct | null> => {
     try {
-      const response = await api.get(`/products/mixin/${productId}`, {
+      const response = await getMixinApi().get(`/products/mixin/${productId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -107,7 +127,7 @@ export const mixinApi = {
 
       console.log('Sending update request with data:', updatedData)
 
-      const response = await api.put(
+      const response = await getMixinApi().put(
         `/products/update/mixin/${productId}`,
         updatedData,
         {
@@ -174,53 +194,18 @@ export const mixinApi = {
     }
 
     try {
-      // Create request body exactly matching the successful Postman request
-      const requestBody = {
-        name: productData.name,
-        main_category: productData.main_category,
-        description: productData.description || '',
-        english_name: null,
-        other_categories: [],
-        brand: null,
-        analysis: null,
-        price: productData.price || 0,
-        special_offer_end: null,
-        length: null,
-        width: null,
-        height: null,
-        weight: productData.weight || 750,
-        barcode: '',
-        compare_at_price: null,
-        guarantee: null,
-        product_identifier: null,
-        max_order_quantity: null,
-        stock: productData.stock || 6,
-        old_slug: null,
-        old_path: null,
-        seo_title: null,
-        seo_description: null,
-        extra_fields: []
-      }
-
-      console.log('Creating Mixin product with data:', requestBody)
-      const response = await api.post(
+      const response = await getMixinApi().post(
         '/products/create/mixin',
-        requestBody,
+        productData,
         {
           headers: {
-            'Authorization': `Bearer ${credentials.access_token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${credentials.access_token}`
           },
           params: {
             mixin_url: credentials.url
           }
         }
       )
-
-      if (!response.data) {
-        throw new Error('No data received in response')
-      }
-
       return response.data
     } catch (error) {
       console.error('Error creating Mixin product:', error)

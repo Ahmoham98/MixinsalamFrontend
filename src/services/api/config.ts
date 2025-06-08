@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-export const BASE_URL = ''  // Empty base URL since we're using absolute paths
+// In development, we use relative paths that are handled by Vite's proxy
+export const BASE_URL = import.meta.env.DEV ? '' : 'https://mixinsalam.liara.run'
 
 export const api = axios.create({
   baseURL: BASE_URL,
