@@ -3,11 +3,9 @@ import type { BasalamCredentials, BasalamProduct, BasalamUserData } from '../../
 import { AxiosError } from 'axios'
 import { getBasalamApi } from './apiSelector'
 
-// Helper function to get the correct path based on environment
+// Helper function to get the correct path - always remove /basalam prefix
 const getBasalamPath = (path: string) => {
-  const isProduction = process.env.NODE_ENV === 'production'
-  // In production, the base URL already includes /basalam
-  return isProduction ? path.replace('/basalam', '') : path
+  return path.replace('/basalam', '')
 }
 
 export const basalamApi = {
@@ -37,7 +35,7 @@ export const basalamApi = {
         endpoint: '/basalam/client/me'
       });
 
-      const response = await getBasalamApi().get('/basalam/client/me', {
+      const response = await getBasalamApi().get(getBasalamPath('/basalam/client/me'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
