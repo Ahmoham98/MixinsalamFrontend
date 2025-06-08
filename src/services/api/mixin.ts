@@ -52,14 +52,12 @@ export const mixinApi = {
 
       const response = await getMixinApi().get('/products/my-mixin-products', {
         headers: {
-          'Authorization': `Bearer ${credentials.access_token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Authorization: `Bearer ${credentials.access_token}`,
         },
         params: {
           mixin_url: credentials.url,
-          mixin_page: 1
-        }
+          mixin_page: 1,
+        },
       });
 
       console.log('Mixin products response:', response.data);
