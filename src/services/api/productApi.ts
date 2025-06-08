@@ -1,5 +1,5 @@
 import { getProductsApi } from './apiSelector'
-import type { BasalamProduct } from '../../types'
+import type { BasalamProduct, BasalamCredentials } from '../../types'
 
 // Helper function to get the correct path
 const getProductPath = (path: string) => {
@@ -8,19 +8,37 @@ const getProductPath = (path: string) => {
 
 export const productApi = {
   // Get all products
-  getProducts: async (vendorId: number) => {
-    const response = await getProductsApi().get<BasalamProduct[]>(getProductPath('/products/my-basalam-products/' + vendorId))
+  getProducts: async (vendorId: number, credentials: BasalamCredentials) => {
+    const response = await getProductsApi().get<BasalamProduct[]>(
+      getProductPath('/products/my-basalam-products/' + vendorId),
+      {
+        headers: {
+          'Authorization': `Bearer ${credentials.access_token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }
+    )
     return response.data
   },
 
   // Get product by ID
-  getProductById: async (productId: number) => {
-    const response = await getProductsApi().get<BasalamProduct>(getProductPath('/products/' + productId))
+  getProductById: async (productId: number, credentials: BasalamCredentials) => {
+    const response = await getProductsApi().get<BasalamProduct>(
+      getProductPath('/products/' + productId),
+      {
+        headers: {
+          'Authorization': `Bearer ${credentials.access_token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }
+    )
     return response.data
   },
 
   // Update product
-  updateProduct: async (productId: number, productData: { name: string; price: number }) => {
+  updateProduct: async (productId: number, credentials: BasalamCredentials, productData: { name: string; price: number }) => {
     const formData = new FormData()
     formData.append('name', productData.name)
     formData.append('price', productData.price.toString())
@@ -30,6 +48,7 @@ export const productApi = {
       formData,
       {
         headers: {
+          'Authorization': `Bearer ${credentials.access_token}`,
           'Content-Type': 'multipart/form-data'
         }
       }
@@ -38,8 +57,17 @@ export const productApi = {
   },
 
   // Delete product
-  deleteProduct: async (productId: number) => {
-    const response = await getProductsApi().delete(getProductPath('/products/' + productId))
+  deleteProduct: async (productId: number, credentials: BasalamCredentials) => {
+    const response = await getProductsApi().delete(
+      getProductPath('/products/' + productId),
+      {
+        headers: {
+          'Authorization': `Bearer ${credentials.access_token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }
+    )
     return response.data
   }
 } 

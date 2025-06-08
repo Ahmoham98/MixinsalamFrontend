@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../store/authStore'
 import { mixinApi } from '../services/api/mixin'
 import { basalamApi } from '../services/api/basalam'
+import { productApi } from '../services/api/productApi'
 import { X, ChevronDown, ChevronUp, LogOut, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import type { MixinProduct, BasalamProduct } from '../types'
@@ -735,7 +736,10 @@ function HomePage() {
       if (!userData?.vendor?.id) {
         throw new Error('Vendor ID is required to fetch Basalam products');
       }
-      return basalamApi.getProducts(basalamCredentials!, userData.vendor.id);
+      if (!basalamCredentials?.access_token) {
+        throw new Error('Basalam credentials are required to fetch products');
+      }
+      return productApi.getProducts(userData.vendor.id, basalamCredentials);
     },
     enabled: !!userData?.vendor?.id && !!basalamCredentials?.access_token,
     retry: 1,
@@ -810,7 +814,10 @@ function HomePage() {
       if (type === 'mixin' && mixinCredentials) {
         product = await mixinApi.getProductById(mixinCredentials, productId)
       } else if (type === 'basalam' && basalamCredentials) {
-        product = await basalamApi.getProductById(basalamCredentials, productId)
+        if (!basalamCredentials.access_token) {
+          throw new Error('Basalam credentials are required to fetch product details');
+        }
+        product = await productApi.getProductById(productId, basalamCredentials)
       }
 
       if (product) {

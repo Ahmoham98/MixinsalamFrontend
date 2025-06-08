@@ -96,7 +96,7 @@ export const mixinApi = {
         params: {
           mixin_url: credentials.url,
         },
-      })  
+      })
       return response.data || null
     } catch (error) {
       console.error('Error fetching Mixin product:', error)
