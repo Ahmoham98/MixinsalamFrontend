@@ -1,7 +1,7 @@
 import { api, handleApiError } from './config'
 import type { BasalamCredentials, BasalamProduct, BasalamUserData } from '../../types'
 import { AxiosError } from 'axios'
-import { getBasalamApi } from './apiSelector'
+import { getBasalamApi, getBasalamClientApi, getBasalamProductsApi } from './apiSelector'
 
 // Helper function to get the correct path based on environment
 const getBasalamPath = (path: string) => {
@@ -34,10 +34,10 @@ export const basalamApi = {
     try {
       console.log('Sending request to validate Basalam credentials:', {
         token,
-        endpoint: '/basalam/client/me'
+        endpoint: '/client/me'
       });
 
-      const response = await getBasalamApi().get('/basalam/client/me', {
+      const response = await getBasalamClientApi().get('/client/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export const basalamApi = {
         vendorId
       });
 
-      const response = await getBasalamApi().get(`/products/my-basalam-products/${vendorId}`, {
+      const response = await getBasalamProductsApi().get(`/products/my-basalam-products/${vendorId}`, {
         headers: {
           'Authorization': `Bearer ${credentials.access_token}`,
           'Content-Type': 'application/json',

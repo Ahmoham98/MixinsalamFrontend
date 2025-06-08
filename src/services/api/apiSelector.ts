@@ -1,8 +1,18 @@
 import { api } from './config'
-import { productionApi, productionMixinApi, productionBasalamApi } from './productionApi'
+import { productionApi, productionBasalamClientApi, productionBasalamProductsApi } from './productionApi'
 
-const isDevelopment = import.meta.env.MODE === 'development'
+export const getApi = () => {
+  return import.meta.env.PROD ? productionApi : api
+}
 
-export const getApi = () => isDevelopment ? api : productionApi
-export const getMixinApi = () => isDevelopment ? api : productionMixinApi
-export const getBasalamApi = () => isDevelopment ? api : productionBasalamApi 
+export const getBasalamApi = () => {
+  return import.meta.env.PROD ? productionBasalamClientApi : api
+}
+
+export const getBasalamClientApi = () => {
+  return import.meta.env.PROD ? productionBasalamClientApi : api
+}
+
+export const getBasalamProductsApi = () => {
+  return import.meta.env.PROD ? productionBasalamProductsApi : api
+} 

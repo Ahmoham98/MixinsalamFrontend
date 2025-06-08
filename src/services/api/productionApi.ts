@@ -22,8 +22,18 @@ export const productionMixinApi = axios.create({
   withCredentials: false
 })
 
-// Basalam API instance for Basalam-specific requests
-export const productionBasalamApi = axios.create({
+// Basalam API instance for client/me endpoint
+export const productionBasalamClientApi = axios.create({
+  baseURL: `${PRODUCTION_BASE_URL}/basalam`,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  withCredentials: false
+})
+
+// Basalam API instance for products endpoint
+export const productionBasalamProductsApi = axios.create({
   baseURL: PRODUCTION_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -60,4 +70,5 @@ const addInterceptors = (instance: typeof productionApi) => {
 // Add interceptors to all production API instances
 addInterceptors(productionApi);
 addInterceptors(productionMixinApi);
-addInterceptors(productionBasalamApi); 
+addInterceptors(productionBasalamClientApi);
+addInterceptors(productionBasalamProductsApi); 
