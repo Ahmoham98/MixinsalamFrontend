@@ -34,10 +34,10 @@ export const basalamApi = {
     try {
       console.log('Sending request to validate Basalam credentials:', {
         token,
-        endpoint: '/basalam/client/me'
+        endpoint: '/client/me'
       });
 
-      const response = await getBasalamApi().get('/basalam/client/me', {
+      const response = await getBasalamApi().get('/client/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
