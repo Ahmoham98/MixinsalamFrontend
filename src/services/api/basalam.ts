@@ -1,7 +1,7 @@
 import { api, handleApiError } from './config'
 import type { BasalamCredentials, BasalamProduct, BasalamUserData } from '../../types'
 import { AxiosError } from 'axios'
-import { getBasalamApi, getBasalamClientApi, getBasalamProductsApi } from './apiSelector'
+import { getBasalamApi } from './apiSelector'
 
 // Helper function to get the correct path based on environment
 const getBasalamPath = (path: string) => {
@@ -124,48 +124,50 @@ export const basalamApi = {
 
   getProductById: async (credentials: BasalamCredentials, productId: number): Promise<BasalamProduct | null> => {
     try {
-      const response = await getBasalamApi().get(`/products/basalam/${productId}`, {
+      const response = await getBasalamApi().get(`/basalam/${productId}`, {
         headers: {
-          Authorization: `Bearer ${credentials.access_token}`,
-        },
-      })
-      return response.data || null
+          'Authorization': `Bearer ${credentials.access_token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      return response.data || null;
     } catch (error) {
-      console.error('Error fetching Basalam product:', error)
-      return null
+      console.error('Error fetching Basalam product:', error);
+      return null;
     }
   },
 
   updateProduct: async (credentials: BasalamCredentials, productId: number, productData: { name: string; price: number }) => {
     try {
-    const formData = new FormData()
-    formData.append('name', productData.name)
-    formData.append('price', productData.price.toString())
+      const formData = new FormData();
+      formData.append('name', productData.name);
+      formData.append('price', productData.price.toString());
 
       const response = await getBasalamApi().patch(
-        `/products/update/basalam/${productId}`,
+        `/update/basalam/${productId}`,
         formData,
-      {
-        headers: {
+        {
+          headers: {
             'Authorization': `Bearer ${credentials.access_token}`,
             'Content-Type': 'multipart/form-data'
           }
-      }
-    )
+        }
+      );
 
       if (!response.data) {
-        throw new Error('No data received in response')
+        throw new Error('No data received in response');
       }
 
-      return response.data
+      return response.data;
     } catch (error) {
-      console.error('Error updating Basalam product:', error)
+      console.error('Error updating Basalam product:', error);
       if (error instanceof AxiosError && error.response) {
-        console.error('Error response:', error.response.data)
-        console.error('Error status:', error.response.status)
-        throw new Error(error.response.data?.message || 'Failed to update Basalam product')
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+        throw new Error(error.response.data?.message || 'Failed to update Basalam product');
       }
-      throw new Error('Failed to update Basalam product')
+      throw new Error('Failed to update Basalam product');
     }
   }
 }

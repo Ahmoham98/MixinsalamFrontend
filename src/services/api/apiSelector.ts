@@ -1,5 +1,5 @@
 import { api } from './config'
-import { productionApi, productionMixinApi } from './productionApi'
+import { productionApi, productionMixinApi, productionBasalamApi } from './productionApi'
 import { productionBasalamEndpoints, productionMixinEndpoints } from './productionEndpoints'
 
 // Development API selectors
@@ -9,6 +9,10 @@ export const getApi = () => {
 
 export const getMixinApi = () => {
   return import.meta.env.PROD ? productionMixinApi : api
+}
+
+export const getBasalamApi = () => {
+  return import.meta.env.PROD ? productionBasalamApi : api
 }
 
 // Production API selectors
