@@ -32,6 +32,16 @@ export const productionBasalamApi = axios.create({
   withCredentials: false
 })
 
+// Products API instance for product-related requests
+export const productionProductsApi = axios.create({
+  baseURL: `${PRODUCTION_BASE_URL}/products`,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  withCredentials: false
+})
+
 // Add response interceptor for debugging
 const addInterceptors = (instance: typeof productionApi) => {
   instance.interceptors.response.use(
@@ -60,4 +70,5 @@ const addInterceptors = (instance: typeof productionApi) => {
 // Add interceptors to all production API instances
 addInterceptors(productionApi);
 addInterceptors(productionMixinApi);
-addInterceptors(productionBasalamApi); 
+addInterceptors(productionBasalamApi);
+addInterceptors(productionProductsApi); 
