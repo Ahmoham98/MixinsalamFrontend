@@ -113,14 +113,13 @@ function CredentialsPage() {
       const data = await mixinApi.validateCredentials(url, token)
       console.log('Received data from API:', data)
       
-      if (data && data['mixin-ceredentials']) {
-        console.log('Setting credentials:', data['mixin-ceredentials'])
+      if (data && data.url && data.access_token) {
         setMixinCredentials({ 
-          url: data['mixin-ceredentials'].mixin_url, 
-          access_token: data['mixin-ceredentials'].access_token 
+          url: data.url, 
+          access_token: data.access_token 
         })
         setIsMixinModalOpen(false)
-        alert(data.message || 'Successfully connected to Mixin!')
+        alert('Successfully connected to Mixin!')
         window.location.reload()
       } else {
         console.error('Invalid response format:', data)

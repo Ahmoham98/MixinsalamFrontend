@@ -11,15 +11,12 @@ export const mixinApi = {
 
       console.log('Validation response:', response.data);
 
-      // Check if we have a successful response with the expected structure
-      if (response.data && response.data.message === "you are connected successfully!") {
-        const credentials = response.data["mixin-ceredentials"];
-        if (credentials && credentials.mixin_url && credentials.access_token) {
-          return {
-            url: credentials.mixin_url,
-            access_token: credentials.access_token
-          };
-        }
+      // Check if we have a successful response with the credentials
+      if (response.data && response.data.url && response.data.access_token) {
+        return {
+          url: response.data.url,
+          access_token: response.data.access_token
+        };
       }
       
       throw new Error('Invalid response format from server');
