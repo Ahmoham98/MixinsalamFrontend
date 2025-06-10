@@ -9,19 +9,24 @@ export const mixinApi = {
       
       const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
 
-      console.log('Validation response:', {
-        status: response.status,
-        data: response.data,
-        headers: response.headers
-      });
+      console.log('Validation response:', response.data);
 
-      if (response.data?.message === "you are connected successfully!") {
-        return response.data["mixin-ceredentials"];
+      // Check if we have a successful response with the expected structure
+      if (response.data && response.data.message === "you are connected successfully!") {
+        const credentials = response.data["mixin-ceredentials"];
+        if (credentials && credentials.mixin_url && credentials.access_token) {
+          return {
+            url: credentials.mixin_url,
+            access_token: credentials.access_token
+          };
+        }
       }
-      throw new Error('Invalid response from server');
+      
+      throw new Error('Invalid response format from server');
     } catch (error: any) {
       console.error('Full error object:', error);
       console.error('Error response:', error.response);
+      
       if (error.response?.status === 403) {
         throw new Error("we can't login with the following credentials");
       } else if (error.response?.status === 404) {
