@@ -154,15 +154,15 @@ export const basalamApi = {
     extra_fields?: string[];
   }) => {
     try {
-      const formData = new FormData()
-      formData.append('name', productData.name)
-      formData.append('price', productData.price.toString())
+    const formData = new FormData()
+    formData.append('name', productData.name)
+    formData.append('price', productData.price.toString())
 
       const response = await api.patch(
         `/products/update/basalam/${productId}`,
         formData,
-        {
-          headers: {
+      {
+        headers: {
             Authorization: `Bearer ${credentials.access_token}`,
           },
         }

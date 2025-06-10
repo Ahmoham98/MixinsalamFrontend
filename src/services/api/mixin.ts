@@ -11,11 +11,15 @@ export const mixinApi = {
 
       console.log('Validation response:', response.data);
 
-      // Check if we have a successful response with the credentials
-      if (response.data && response.data.url && response.data.access_token) {
+      // Check if we have a successful response with the expected structure
+      if (response.data && 
+          response.data.message === "you are connected successfully!" && 
+          response.data["mixin-ceredentials"] && 
+          response.data["mixin-ceredentials"].mixin_url && 
+          response.data["mixin-ceredentials"].access_token) {
         return {
-          url: response.data.url,
-          access_token: response.data.access_token
+          url: response.data["mixin-ceredentials"].mixin_url,
+          access_token: response.data["mixin-ceredentials"].access_token
         };
       }
       
