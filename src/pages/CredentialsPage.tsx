@@ -144,14 +144,15 @@ function CredentialsPage() {
       console.log('Processing message...');
       
       // Check if the response has the expected tokens
-      const { access_token, refresh_token } = event.data;
-      console.log('Extracted tokens:', { access_token, refresh_token });
+      const { access_token, refresh_token, vendor_id } = event.data;
+      console.log('Extracted tokens:', { access_token, refresh_token, vendor_id });
       
       if (access_token) {
         console.log('Setting Basalam credentials...');
         setBasalamCredentials({
           access_token,
-          refresh_token
+          refresh_token,
+          vendor_id
         });
         
         // Verify credentials were set
@@ -202,85 +203,45 @@ function CredentialsPage() {
   }
 
   const handleContinue = () => {
-    navigate('/home')
-  }
-
-  React.useEffect(() => {
     if (isAuthenticated()) {
       navigate('/home')
     }
-  }, [isAuthenticated, navigate])
-
-  React.useEffect(() => {
-    if (basalamCredentials && sessionStorage.getItem('shouldReloadAfterBasalam')) {
-      sessionStorage.removeItem('shouldReloadAfterBasalam')
-      window.location.reload()
-    }
-  }, [basalamCredentials])
-
-  // Add a debug effect to monitor credentials
-  React.useEffect(() => {
-    console.log('Basalam credentials changed:', basalamCredentials);
-    if (basalamCredentials) {
-      console.log('UI should update to show connected state');
-    }
-  }, [basalamCredentials]);
-
-  // Add a debug effect to monitor the button state
-  React.useEffect(() => {
-    console.log('Button state - basalamCredentials:', !!basalamCredentials);
-  }, [basalamCredentials]);
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center">حساب های خود را متصل کنید</h1>
+      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h1 className="text-2xl font-bold text-center mb-6">Connect Your Accounts</h1>
+        
         <div className="space-y-4">
           <button
             onClick={() => setIsMixinModalOpen(true)}
-            className={`w-full py-3 rounded-lg transition flex items-center justify-center ${
-              mixinCredentials 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
-            {mixinCredentials ? (
-              <>
-                <span>✓</span>
-                <span className="ml-2">میکسین متصل شد</span>
-              </>
-            ) : (
-              'Connect to Mixin'
-            )}
+            Connect Mixin
           </button>
+          
           <button
             onClick={handleBasalamConnect}
-            className={`w-full py-3 rounded-lg transition flex items-center justify-center ${
-              basalamCredentials 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+          >
+            Connect Basalam
+          </button>
+          
+          <button
+            onClick={handleContinue}
+            disabled={!isAuthenticated()}
+            className={`w-full py-2 rounded ${
+              isAuthenticated()
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
-            {basalamCredentials ? (
-              <>
-                <span className="text-xl mr-2">✓</span>
-                <span>باسلام متصل شد</span>
-              </>
-            ) : (
-              'Connect to Basalam'
-            )}
+            Continue
           </button>
-
-          {(mixinCredentials || basalamCredentials) && (
-            <button
-              onClick={handleContinue}
-              className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition mt-8"
-            >
-              Continue to Dashboard
-            </button>
-          )}
         </div>
       </div>
+
       <Modal
         isOpen={isMixinModalOpen}
         onClose={() => setIsMixinModalOpen(false)}

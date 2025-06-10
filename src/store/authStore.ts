@@ -9,6 +9,7 @@ interface AuthState {
   setBasalamCredentials: (credentials: BasalamCredentials | null) => void
   clearCredentials: () => void
   isAuthenticated: () => boolean
+  logout: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -23,6 +24,9 @@ export const useAuthStore = create<AuthState>()(
         const state = get()
         return !!(state.mixinCredentials && state.basalamCredentials)
       },
+      logout: () => {
+        set({ mixinCredentials: null, basalamCredentials: null })
+      }
     }),
     {
       name: 'auth-storage',

@@ -1,0 +1,109 @@
+wecan.mixin.website
+
+Bearer OQg-gBB6iZwB4N4pBqXK0W-u-Wn7NjWsLDm5i9lBvAz7NqAoIBn324Xax3jyAa0f
+
+
+
+
+
+Now the changecard value will always be exactly one of these four cases:
+    'mixin,basalam' (when product exists in both)
+    'mixin' (when Mixin product doesn't exist in Basalam)
+    'basalam' (when Basalam product doesn't exist in Mixin)
+Each check will overwrite any previous value, ensuring we always have the correct value for the current check.
+
+
+
+
+
+
+
+I want to also add this option handler for get basalam product which is the follwoing endpoint /products/basalam/my-basalam-products/{vendor_id}
+
+The responsible route for handling this request is the follwoing: 
+@product_router.get("/my-basalam-products/{vendor_id}")
+async def get_all_basalam_products(
+    vendor_id: int,
+    basalam_page: int = 1,
+    token: str = Depends(access_token_bearer),
+):
+    result = await ProductController.get_basalam_products(token=token ,vendor_id=vendor_id ,basalam_page=basalam_page)
+    return result
+
+and it's controller is:
+    async def get_basalam_products(token: str, vendor_id: int, basalam_page: int):
+        method= get
+        url=f"https://core.basalam.com/v3/vendors/{vendor_id}/products"
+        headers={
+            'Accept': 'application/json',
+            'Authorization': f'Bearer {token}'
+        }
+        params={
+            "page": basalam_page
+        }
+        
+        response = requests.request(method=method, url=url, headers=headers, params=params)
+        
+        if response.status_code == 200:
+            response = response.json()
+            
+            basalam_body = response
+            return basalam_body
+        else:
+            raise HTTPException(status_code=404, detail="we can't connect to the provider")
+
+like previouse one
+
+
+In productino mode, I want to send the following reqeusts:
+/me endpoint - get to get basalam user data with the following details: 
+method: get
+request path : https://mixinsalam.liara.run/basalam/client/me
+parameters: no parameters needs
+header: "Authorization": "Bearer {token}"
+body: no body needs
+
+/my-basalam-products endpoint - get to get all basalam products data with the following details: 
+method: get
+request path : https://mixinsalam.liara.run/products/my-basalam-products/{vendor_id} which vendor_id is what we get by requesting form /me endpiont
+parameters: no params needs
+header: "Authorization": "Bearer {token}"
+body: no body needs
+
+
+/mixin endpoint - get to get basalam user data with the following details: 
+method: get
+request path : https://mixinsalam.liara.run/mixin/{mixin_product_id} which product_id is hte product_id user clicks on and we handled that already
+parameters: "mixin_url"which we stored it when user enter the credentials it had
+header: "Authorization": "Bearer {token}"
+body: no body needs
+
+/basalam endpoint - get to get basalam user data with the following details: 
+method: get
+request path : https://mixinsalam.liara.run/basalam/{basalam_product_id}  which product_id is hte product_id user clicks on and we handled that already
+parameters: no parameter needs
+header: "Authorization": "Bearer {token}"
+body: no body needs
+
+/update/mixin endpoint - get to get basalam user data with the following details: 
+method: put
+request path : https://mixinsalam.liara.run/update/mixin/{mixin_product_id} which product_id is the product_id user clicks on and we handled that already
+parameters: "mixin_url"which we stored it when user enter the credentials it had
+header: "Authorization": "Bearer {token}"
+body: we already made the request body in the code when we want to send udate reqeust in development api calls. fo this request. create one same as that or use that. 
+
+/update/basalam endpoint - get to get basalam user data with the following details: 
+method: patch
+request path : https://mixinsalam.liara.run/update/basalam/{product_id} which product_id is the product_id user clicks on and we handled that already
+parameters: "mixin_url"which we stored it when user enter the credentials it had
+header: "Authorization": "Bearer {token}"
+body: we already made the request body in the code when we want to send udate reqeust in development api calls. fo this request. create one same as that or use that.
+
+make this requset in production mode without making any confilict with develpment mode. by without makeing confilict with developement, I mean I want my frontend to handle these request seperately from what we have in development mode but, same as what we have in development mode to proccess the requests.
+
+if we have them seperated, tell me and if not, create them and make sure they are all sending request to the proper url path
+
+
+
+
+

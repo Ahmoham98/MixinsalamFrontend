@@ -1,32 +1,22 @@
 import { api, handleApiError } from './config'
 import type { MixinCredentials, MixinProduct } from '../../types'
 import { AxiosError } from 'axios'
-import { getMixinApi } from './apiSelector'
 
 export const mixinApi = {
   validateCredentials: async (url: string, token: string) => {
     try {
-      console.log('Sending request to validate Mixin credentials:', {
-        url,
-        token,
-        endpoint: '/mixin/client/'
+      console.log('Validating Mixin credentials:', { url, token });
+      
+      const response = await api.post(`/mixin/client/?mixin_url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
+
+      console.log('Validation response:', {
+        status: response.status,
+        data: response.data,
+        headers: response.headers
       });
 
-      const response = await getMixinApi().post(`/mixin/client/`, null, {
-        params: {
-          mixin_url: url,
-          token: token
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-
-      console.log('Mixin validation response:', response.data);
-
-      if (response.data) {
-        return response.data;
+      if (response.data?.message === "you are connected successfully!") {
+        return response.data["mixin-ceredentials"];
       }
       throw new Error('Invalid response from server');
     } catch (error: any) {
@@ -50,16 +40,14 @@ export const mixinApi = {
         token: credentials.access_token
       });
 
-      const response = await getMixinApi().get('/products/my-mixin-products', {
+      const response = await api.get('https://mixinsalam.liara.run/products/my-mixin-products', {
         headers: {
-          'Authorization': `Bearer ${credentials.access_token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Authorization: `Bearer ${credentials.access_token}`,
         },
         params: {
           mixin_url: credentials.url,
-          mixin_page: 1
-        }
+          mixin_page: 1,
+        },
       });
 
       console.log('Mixin products response:', response.data);
@@ -83,13 +71,13 @@ export const mixinApi = {
       return [];
     } catch (error) {
       console.error('Error fetching Mixin products:', error);
-      return [];
+      throw error;
     }
   },
 
   getProductById: async (credentials: MixinCredentials, productId: number): Promise<MixinProduct | null> => {
     try {
-      const response = await getMixinApi().get(`/products/mixin/${productId}`, {
+      const response = await api.get(`/products/mixin/${productId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -127,7 +115,7 @@ export const mixinApi = {
 
       console.log('Sending update request with data:', updatedData)
 
-      const response = await getMixinApi().put(
+      const response = await api.put(
         `/products/update/mixin/${productId}`,
         updatedData,
         {
@@ -194,9 +182,39 @@ export const mixinApi = {
     }
 
     try {
-      const response = await getMixinApi().post(
+      // Create request body exactly matching the successful Postman request
+      const requestBody = {
+        name: productData.name,
+        main_category: productData.main_category,
+        description: productData.description || '',
+        english_name: null,
+        other_categories: [],
+        brand: null,
+        analysis: null,
+        price: productData.price || 0,
+        special_offer_end: null,
+        length: null,
+        width: null,
+        height: null,
+        weight: productData.weight || 750,
+        barcode: '',
+        compare_at_price: null,
+        guarantee: null,
+        product_identifier: null,
+        max_order_quantity: null,
+        stock: productData.stock || 6,
+        old_slug: null,
+        old_path: null,
+        seo_title: null,
+        seo_description: null,
+        extra_fields: []
+      }
+
+      console.log('Sending create request with data:', requestBody)
+
+      const response = await api.post(
         '/products/create/mixin',
-        productData,
+        requestBody,
         {
           headers: {
             'Authorization': `Bearer ${credentials.access_token}`
@@ -206,13 +224,11 @@ export const mixinApi = {
           }
         }
       )
+
       return response.data
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating Mixin product:', error)
-      if (error instanceof AxiosError && error.response) {
-        console.error('Error response:', error.response.data)
-        console.error('Error status:', error.response.status)
-        
+      if (error.response?.data) {
         // Handle validation errors
         if (error.response.status === 422) {
           const validationErrors = error.response.data.detail
@@ -221,10 +237,7 @@ export const mixinApi = {
             throw new Error(`Validation error: ${errorMessages}`)
           }
         }
-        
-        // Handle other error types
-        const errorMessage = error.response.data?.detail || error.response.data?.message || 'Failed to create Mixin product'
-        throw new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage))
+        throw new Error(error.response.data.detail || 'Failed to create Mixin product')
       }
       throw new Error('Failed to create Mixin product')
     }

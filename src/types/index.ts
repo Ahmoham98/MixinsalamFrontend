@@ -6,6 +6,7 @@ export interface MixinCredentials {
 export interface BasalamCredentials {
   access_token: string;
   refresh_token: string;
+  vendor_id: number;
 }
 
 export interface MixinProduct {
@@ -13,9 +14,11 @@ export interface MixinProduct {
   name: string;
   price: number;
   description: string;
+  main_category: number;
+  weight: number;
+  stock: number;
   // Add other fields as needed
 }
-
 
 export interface BasalamProduct {
   id: number;

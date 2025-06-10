@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-// In development, we use relative paths that are handled by Vite's proxy
-export const BASE_URL = import.meta.env.DEV ? '' : 'https://mixinsalam.liara.run'
+export const BASE_URL = 'https://mixinsalam.liara.run'  // Update to the correct API server URL
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -9,7 +8,7 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  withCredentials: false  // Set to false to avoid CORS issues
+  withCredentials: true  // Enable credentials
 })
 
 // Add response interceptor for debugging
@@ -19,7 +18,8 @@ api.interceptors.response.use(
       url: response.config.url,
       method: response.config.method,
       status: response.status,
-      data: response.data
+      data: response.data,
+      headers: response.headers
     });
     return response;
   },
@@ -29,7 +29,8 @@ api.interceptors.response.use(
       method: error.config?.method,
       status: error.response?.status,
       data: error.response?.data,
-      message: error.message
+      message: error.message,
+      headers: error.response?.headers
     });
     return Promise.reject(error);
   }

@@ -41,7 +41,8 @@ function BasalamCallback() {
         console.log('Setting Basalam credentials...')
         setBasalamCredentials({
           access_token: response.result.response.access_token,
-          refresh_token: response.result.response.refresh_token
+          refresh_token: response.result.response.refresh_token,
+          vendor_id: response.result.response.vendor_id
         })
 
         // Show success message

@@ -6,7 +6,14 @@ import CredentialsPage from './pages/CredentialsPage'
 import HomePage from './pages/HomePage'
 import BasalamCallback from './pages/BasalamCallback'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -23,7 +30,7 @@ function App() {
           <Route
             path="/home"
             element={
-              <PrivateRoute> 
+              <PrivateRoute>
                 <HomePage />
               </PrivateRoute>
             }

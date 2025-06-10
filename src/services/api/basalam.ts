@@ -1,130 +1,116 @@
-import { api } from './config'
+import { api, handleApiError } from './config'
 import type { BasalamCredentials, BasalamProduct, BasalamUserData } from '../../types'
 import { AxiosError } from 'axios'
-import { getBasalamApi } from './apiSelector'
-
-// Helper function to get the correct path based on environment
-const getBasalamPath = (path: string) => {
-  const isProduction = process.env.NODE_ENV === 'production'
-  // In production, the base URL already includes /basalam
-  return isProduction ? path.replace('/basalam', '') : path
-}
 
 export const basalamApi = {
   getAccessToken: async (code: string, state: string) => {
     try {
       console.log('Exchanging code for token:', { code, state })
-      const response = await getBasalamApi().post(getBasalamPath('/basalam/client/get-user-access-token/'), {
+      const response = await api.post('/basalam/client/get-user-access-token/', {
         code,
         state
       })
-      console.log('Token exchange response:', response.data)
       return response.data
     } catch (error) {
-      console.error('Error exchanging code for access token:', error)
-      if (error instanceof AxiosError && error.response) {
-        console.error('Error response:', error.response.data)
-        console.error('Error status:', error.response.status)
-      }
+      console.error('Error getting access token:', error)
       throw error
-    }
-  },
-
-  validateCredentials: async (token: string): Promise<BasalamUserData> => {
-    try {
-      console.log('Sending request to validate Basalam credentials:', {
-        token,
-        endpoint: '/basalam/client/me'
-      });
-
-      const response = await getBasalamApi().get('/basalam/client/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-
-      console.log('Basalam validation response:', response.data);
-
-      if (response.data) {
-        return response.data;
-      }
-      throw new Error('Invalid response from server');
-    } catch (error: any) {
-      console.error('Full error object:', error);
-      console.error('Error response:', error.response);
-      if (error.response?.status === 403) {
-        throw new Error("we can't login with the following credentials");
-      } else if (error.response?.status === 404) {
-        throw new Error("Invalid data. could be your url or your access token");
-      } else if (error.response?.status === 500) {
-        throw new Error("some error occurred... could be from server or from our request.");
-      }
-      throw error;
     }
   },
 
   getUserData: async (credentials: BasalamCredentials): Promise<BasalamUserData | null> => {
     try {
-      const response = await getBasalamApi().get(getBasalamPath('/basalam/client/me'), {
+      const response = await api.get('/basalam/client/me', {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
       })
-      return response.data
+      return response.data || null
     } catch (error) {
-      console.error('Error fetching user data:', error)
+      console.error('Error fetching Basalam user data:', error)
       return null
     }
   },
 
   getProducts: async (credentials: BasalamCredentials, vendorId: number): Promise<BasalamProduct[]> => {
     try {
-      console.log('Fetching Basalam products with credentials:', {
-        token: credentials.access_token,
-        vendorId
-      });
-
-      const response = await getBasalamApi().get(`/products/my-basalam-products/${vendorId}`, {
+      console.log('=== Basalam Products Request Debug ===');
+      console.log('Vendor ID:', vendorId);
+      console.log('Access Token:', credentials.access_token);
+      
+      const response = await api.get(`/products/my-basalam-products/${vendorId}`, {
         headers: {
-          'Authorization': `Bearer ${credentials.access_token}`,
+          Authorization: `Bearer ${credentials.access_token}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
         params: {
-          basalam_page: 1
-        }
+          basalam_page: 1,
+        },
       });
 
-      console.log('Basalam products response:', response.data);
+      console.log('=== Basalam Products Response Debug ===');
+      console.log('Response Status:', response.status);
+      console.log('Response Data:', response.data);
 
-      // Handle paginated response
-      if (response.data?.result && Array.isArray(response.data.result)) {
-        return response.data.result;
+      if (!response.data) {
+        console.error('No data received in response');
+        return [];
       }
 
-      // Fallback to direct array
+      // Handle the standard paginated response format
+      if (response.data?.data && Array.isArray(response.data.data)) {
+        console.log('Found products in response.data.data:', {
+          count: response.data.data.length,
+          total: response.data.total_count,
+          page: response.data.page,
+          totalPages: response.data.total_page
+        });
+        return response.data.data;
+      }
+
+      // If we somehow get a direct array
       if (Array.isArray(response.data)) {
+        console.log('Found direct array of products:', response.data.length);
         return response.data;
       }
 
-      // Fallback to single item
+      // If we get a single product
       if (response.data?.id) {
+        console.log('Found single product');
         return [response.data];
+      }
+
+      // If we get a result array (alternative format)
+      if (response.data?.result && Array.isArray(response.data.result)) {
+        console.log('Found products in response.data.result:', response.data.result.length);
+        return response.data.result;
       }
 
       console.error('Unexpected response format:', response.data);
       return [];
     } catch (error) {
-      console.error('Error fetching Basalam products:', error);
+      console.error('=== Basalam Products Error Debug ===');
+      console.error('Error:', error);
+      if (error instanceof AxiosError && error.response) {
+        console.error('Error Response Data:', error.response.data);
+        console.error('Error Status:', error.response.status);
+
+        // Handle specific error cases
+        if (error.response.status === 404) {
+          console.error('Product endpoint not found. Please check the API endpoint.');
+        } else if (error.response.status === 401) {
+          console.error('Unauthorized. Please check your access token.');
+        } else if (error.response.status === 403) {
+          console.error('Forbidden. You may not have permission to access these products.');
+        }
+      }
       return [];
     }
   },
 
   getProductById: async (credentials: BasalamCredentials, productId: number): Promise<BasalamProduct | null> => {
     try {
-      const response = await getBasalamApi().get(`/products/basalam/${productId}`, {
+      const response = await api.get(`/products/basalam/${productId}`, {
         headers: {
           Authorization: `Bearer ${credentials.access_token}`,
         },
@@ -136,36 +122,107 @@ export const basalamApi = {
     }
   },
 
-  updateProduct: async (credentials: BasalamCredentials, productId: number, productData: { name: string; price: number }) => {
+  updateProduct: async (credentials: BasalamCredentials, productId: number, productData: {
+    name: string;
+    price: number;
+    description?: string;
+    analysis?: string;
+    english_name?: string;
+    main_category?: number;
+    other_categories?: number[];
+    brand?: number;
+    is_digital?: boolean;
+    compare_at_price?: number;
+    special_offer?: boolean;
+    special_offer_end?: string;
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
+    barcode?: string;
+    stock_type?: string;
+    stock?: number;
+    max_order_quantity?: number;
+    guarantee?: string;
+    product_identifier?: string;
+    old_path?: string;
+    old_slug?: string;
+    has_variants?: boolean;
+    available?: boolean;
+    seo_title?: string;
+    seo_description?: string;
+    extra_fields?: string[];
+  }) => {
     try {
-    const formData = new FormData()
-    formData.append('name', productData.name)
-    formData.append('price', productData.price.toString())
+      const formData = new FormData()
+      formData.append('name', productData.name)
+      formData.append('price', productData.price.toString())
 
-      const response = await getBasalamApi().patch(
+      const response = await api.patch(
         `/products/update/basalam/${productId}`,
         formData,
-      {
-        headers: {
-            'Authorization': `Bearer ${credentials.access_token}`,
-            'Content-Type': 'multipart/form-data'
-          }
-      }
-    )
-
-      if (!response.data) {
-        throw new Error('No data received in response')
-      }
-
+        {
+          headers: {
+            Authorization: `Bearer ${credentials.access_token}`,
+          },
+        }
+      )
       return response.data
     } catch (error) {
       console.error('Error updating Basalam product:', error)
-      if (error instanceof AxiosError && error.response) {
-        console.error('Error response:', error.response.data)
-        console.error('Error status:', error.response.status)
-        throw new Error(error.response.data?.message || 'Failed to update Basalam product')
-      }
-      throw new Error('Failed to update Basalam product')
+      throw error
+    }
+  },
+
+  createProduct: async (credentials: BasalamCredentials, productData: {
+    name: string;
+    price: number;
+    description?: string;
+    analysis?: string;
+    english_name?: string;
+    main_category?: number;
+    other_categories?: number[];
+    brand?: number;
+    is_digital?: boolean;
+    compare_at_price?: number;
+    special_offer?: boolean;
+    special_offer_end?: string;
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
+    barcode?: string;
+    stock_type?: string;
+    stock?: number;
+    max_order_quantity?: number;
+    guarantee?: string;
+    product_identifier?: string;
+    old_path?: string;
+    old_slug?: string;
+    has_variants?: boolean;
+    available?: boolean;
+    seo_title?: string;
+    seo_description?: string;
+    extra_fields?: string[];
+  }) => {
+    try {
+      const formData = new FormData()
+      formData.append('name', productData.name)
+      formData.append('price', productData.price.toString())
+
+      const response = await api.post(
+        '/products/create/basalam',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${credentials.access_token}`,
+          },
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error creating Basalam product:', error)
+      throw error
     }
   }
 }

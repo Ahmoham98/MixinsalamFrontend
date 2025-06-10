@@ -881,13 +881,13 @@ function HomePage() {
               <div 
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
+                <h2 className="text-xl font-semibold text-right w-full">محصول مشترک در میکسین</h2>
                 <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
                   onClick={() => setIsCommonMixinSectionOpen(!isCommonMixinSectionOpen)}
                 >
                   {isCommonMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                 </button>
-                <h2 className="text-xl font-semibold text-right w-full">محصول مشترک در میکسین</h2>
               </div>
               {isCommonMixinSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
@@ -922,13 +922,13 @@ function HomePage() {
               <div 
                 className="flex items-center justify-between cursor-pointer mb-4"
               >
+                <h2 className="text-xl font-semibold text-right w-full">محصول مشترک در باسلام</h2>
                 <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
                   onClick={() => setIsCommonBasalamSectionOpen(!isCommonBasalamSectionOpen)}
                 >
                   {isCommonBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                 </button>
-                <h2 className="text-xl font-semibold text-right w-full">محصول مشترک در باسلام</h2>
               </div>
               {isCommonBasalamSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
@@ -968,15 +968,15 @@ function HomePage() {
             <div 
               className="flex items-center justify-between cursor-pointer mb-4"
               >
-                <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
-                  onClick={() => setIsMixinSectionOpen(!isMixinSectionOpen)}
-                >
-                  {isMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                </button>
                 <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در میکسین</h2>
-              </div>
-              {isMixinSectionOpen && (
+                <button 
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+              onClick={() => setIsMixinSectionOpen(!isMixinSectionOpen)}
+            >
+                {isMixinSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+              </button>
+            </div>
+            {isMixinSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                 {!mixinCredentials ? (
                   <div className="text-center py-4 text-gray-500">Please connect to Mixin first</div>
@@ -1009,15 +1009,15 @@ function HomePage() {
             <div 
               className="flex items-center justify-between cursor-pointer mb-4"
               >
-                <button 
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none order-first"
-                  onClick={() => setIsBasalamSectionOpen(!isBasalamSectionOpen)}
-                >
-                  {isBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                </button>
                 <h2 className="text-xl font-semibold text-right w-full">محصولات غیر مشترک در باسلام</h2>
-              </div>
-              {isBasalamSectionOpen && (
+                <button 
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+              onClick={() => setIsBasalamSectionOpen(!isBasalamSectionOpen)}
+            >
+                {isBasalamSectionOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+              </button>
+            </div>
+            {isBasalamSectionOpen && (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                 {!basalamCredentials ? (
                   <div className="text-center py-4 text-gray-500">Please connect to Basalam first</div>
