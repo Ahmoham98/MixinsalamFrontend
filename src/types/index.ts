@@ -16,6 +16,7 @@ export interface MixinProduct {
   // Add other fields as needed
 }
 
+
 export interface BasalamProduct {
   id: number;
   title: string;
